@@ -1,0 +1,32 @@
+#辞書型の検索
+my_dict = {"apple":1, "orange":2, "banana":3}
+"orange" in my_dict.keys() #True
+5 in my_dict.values() #False
+
+#2行n列の入力を辞書型で初期化
+d = {}
+for _ in range(n):
+    s, t = map(str, input().split())
+    d[s] = t
+
+#オブジェクトの一部を共有化
+dict_a = {'key_1':1, 'key_2':2}
+dict_b = {'key_3':3, 'key_4':４}
+dict_c = {**dict_a, **dict_b}
+print(dict_c) #{'key_1': 1, 'key_2': 2, 'key_3': 3, 'key_4': {'key_5': 5}}
+
+#辞書型のオブジェクトをkeyでソート(昇順)
+dic = {"X": 80, "A": 200, "E": 5, "R": 20, "S": 40}
+dic2 = sorted(dic.items()) #[('A', 200), ('E', 5), ('R', 20), ('S', 40), ('X', 80)]
+
+#辞書型のオブジェクトをkeyでソート(降順)
+dic = {"X": 80, "A": 200, "E": 5, "R": 20, "S": 40}
+dic2 = sorted(dic.items(), reverse=True) #[('X', 80), ('S', 40), ('R', 20), ('E', 5), ('A', 200)]
+
+#辞書型のオブジェクトをvalueでソート(昇順)
+dic = {"X": 80, "A": 200, "E": 5, "R": 20, "S": 40}
+dic2 = sorted(dic.items(), key=lambda x:x[1]) #[('E', 5), ('R', 20), ('S', 40), ('X', 80), ('A', 200)]
+
+#辞書型のオブジェクトをvalueでソート(降順)
+dic = {"X": 80, "A": 200, "E": 5, "R": 20, "S": 40}
+dic2 = sorted(dic.items(), key=lambda x:x[1], reverse=True) #[('A', 200), ('X', 80), ('S', 40), ('R', 20), ('E', 5)]

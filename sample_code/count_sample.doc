@@ -1,0 +1,40 @@
+import collections
+
+#特定の文字の数をカウント
+s = "ABCdef"
+s.count("C")
+
+#リストの要素の個数をカウント
+l = ['a', 'a', 'a', 'a', 'b', 'c', 'c']
+l.count('a')
+
+#条件の満たす要素の個数をカウント
+sum(list(i < 0 for i in l))
+
+#条件を満たさない要素の個数をカウント
+sum(list(not (i < 0) for i in l))
+
+#各要素の出現回数を一括で取得する
+import collections
+l = ['a', 'a', 'a', 'a', 'b', 'c', 'c']
+c = collections.Counter(l) # Counter({'a': 4, 'c': 2, 'b': 1})
+
+#出現回数の多い順に要素を取得
+c.most_common() # [('a', 4), ('c', 2), ('b', 1)]
+c.most_common()[0]# ('a', 4)
+c.most_common()[-1]# ('b', 1)
+c.most_common()[0][0]# a
+c.most_common()[0][1]# 4
+ｃ.keys() #dict_keys(['a', 'b', 'c'])
+ｃ.values() #dict_values([3, 5, 4])
+
+#出現回数の少ない順に要素を取得
+c.most_common(2)# [('a', 4), ('c', 2)]
+
+#文字列中の大文字のカウント
+s = "ABCdef"
+sum(map(str.isupper, s))
+
+#文字列中の小文字のカウント
+s = "ABCdef"
+sum(map(str.islower, s))

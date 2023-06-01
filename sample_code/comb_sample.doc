@@ -1,0 +1,26 @@
+import itertools
+
+#冪集合を生成
+def get_subsets(x):
+  l = list(x)
+  n = len(l)
+  return [[l[k] for k in range(n) if i&1<<k] for i in range(2**n)]
+l = ['x','y','z']
+print(get_subsets(l))
+#[[], ['x'], ['y'], ['x', 'y'], ['z'], ['x', 'z'], ['y', 'z'], ['x', 'y', 'z']]
+
+def get_subsets(x):
+    s = list(x)
+    return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
+list(map(lambda x : list(x), get_subsets([1,2,3]))) #"[[] [1,] [2,] [3,] [1,2] [1,3] [2,3] [1,2,3]]"
+
+#キーを指定し、ソートする
+b =[(5,8), (6,10), (7,2),(4,1), (3,11),(9,0)]
+print(sorted(b, key = itemgetter(0))) #第1変数で昇順ソートしてる
+#[(3, 11), (4, 1), (5, 8), (6, 10), (7, 2), (9, 0)]
+print(sorted(b, key = itemgetter(0),reverse=True)) #第1変数で降順ソートしてる
+#[(9, 0), (7, 2), (6, 10), (5, 8), (4, 1), (3, 11)]
+print(sorted(b, key = itemgetter(1))) #第2変数で昇順ソートしてる
+#[(9, 0), (4, 1), (7, 2), (5, 8), (6, 10), (3, 11)]
+print(sorted(b, key = itemgetter(1),reverse=True)) #第2変数で降順ソートしてる
+#[(3, 11), (6, 10), (5, 8), (7, 2), (4, 1), (9, 0)]

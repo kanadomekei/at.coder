@@ -1,0 +1,24 @@
+from collections import deque
+
+#dequeを初期化
+d = deque('a')
+
+#末尾にデータを追加
+d.append('b')#deque(['a', 'b'])
+
+#先頭にデータを追加
+d.appendleft('c') #deque(['c', 'a', 'b'])
+
+#要素の数え上げ
+d.count(5)
+
+#要素の位置を特定
+d.index(2)
+
+#要素の取り出し
+d.pop()
+d.popleft()
+
+#要素の反転
+d.reverse()
+

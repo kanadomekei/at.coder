@@ -1,0 +1,71 @@
+#数理型→文字列型  set list di
+int_a = 10
+str_a = str(a)
+
+#文字列型→数値型
+int_a = '10'
+str_a = int(a)
+
+#リスト→文字列
+list_a = ["a", "b", "c"]
+str_a = "".join(list_a)
+print(str_a)
+
+#文字列→リスト
+str_a="python"
+list_a =list(str_a)
+
+#リスト型→set型
+data_list = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+data_set = set(data_list)
+
+#set型→リスト型
+data_set = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+data_list = list(data_set)
+
+#リスト内の要素変換 文字列型 → 数値型
+a = ["1", "2", "3"]
+for i in range(len(a)):
+    a[i] = int(a[i])
+
+a = ["1", "2", "3"]
+a = list(map(int, a))
+
+#リスト内の要素変換 数理型 → 文字列型
+a = [1, 2, 3]
+for i in range(len(a)):
+    a[i] = str(a[i])
+
+a = [1, 2, 3]
+a = list(map(str, a))
+
+#辞書型→リスト型
+dict_a = {'a': 'Apple', 'b': 'Banana', 'c': 'Cherries', 'd': 'Dragon Fruit'}
+a = dictionary.keys()
+list_a = list(a)
+
+dict_a = {'a': 'Apple', 'b': 'Banana', 'c': 'Cherries', 'd': 'Dragon Fruit'}
+a = dictionary.values()
+list_a = list(a)
+
+#リスト型→辞書型
+key_list= ['150-0013','150-0021','150-0022']
+value_list = ['東京都渋谷区恵比寿','東京都渋谷区恵比寿西','東京都渋谷区恵比寿南']
+dict_result = dict(zip(key_list, value_list))
+
+#隣接リスト→隣接行列
+graph_new = [[0]*n for _ in range(n)]  # 隣接行列
+for i, g_i in enumerate(graph):
+    for j in g_i:
+        graph_new[i][j] = 1
+print(graph_new)
+
+#隣接行列→隣接リスト
+graph_new = []
+for i in range(n):
+    tmp_l = []
+    for j in range(n):
+        if graph[i][j] > 0:
+            tmp_l.append(j)
+    graph_new.append(tmp_l)
+print(graph_new)
