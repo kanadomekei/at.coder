@@ -18,8 +18,11 @@ tasks:
         elif [ -f Cargo.toml ]; then
           echo "Formatting Rust code..."
           cargo fmt
+        elif [ -f main.zig ]; then
+          echo "Formatting Zig code..."
+          zig fmt main.zig
         else
-          echo "No go or rust files found to format."
+          echo "No go, rust, or zig files found to format."
           exit 1
         fi
 
@@ -34,8 +37,11 @@ tasks:
         elif [ -f Cargo.toml ]; then
           echo "Linting Rust code..."
           cargo clippy
+        elif [ -f main.zig ]; then
+          echo "Linting Zig code..."
+          zig build-exe main.zig && rm main main.o
         else
-          echo "No go or rust files found to lint."
+          echo "No go, rust, or zig files found to lint."
           exit 1
         fi
 
@@ -50,8 +56,10 @@ tasks:
           oj test -d ../tests -c "go run main.go"
         elif [ -f Cargo.toml ]; then
           oj test -d ../tests -c "cargo run"
+        elif [ -f main.zig ]; then
+          oj test -d ../tests -c "zig run main.zig"
         else
-          echo "No go or rust files found to test."
+          echo "No go, rust, or zig files found to test."
           exit 1
         fi
 
@@ -64,7 +72,9 @@ tasks:
           acc submit main.go
         elif [ -f Cargo.toml ]; then
           acc submit
+        elif [ -f main.zig ]; then
+          acc submit main.zig
         else
-          echo "No go or rust files found to submit."
+          echo "No go, rust, or zig files found to submit."
           exit 1
         fi
