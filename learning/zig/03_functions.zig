@@ -4,140 +4,140 @@ pub fn main() !void {
     // ==========================================
     // 関数
     // ==========================================
-    
-    std.debug.print("=== Zigの関数 ===\n");
-    
+
+    std.debug.print("=== Zigの関数 ===\n", .{});
+
     // ------------------------------------------
     // 基本的な関数呼び出し
     // ------------------------------------------
-    
-    std.debug.print("\n=== 基本的な関数 ===\n");
-    
+
+    std.debug.print("\n=== 基本的な関数 ===\n", .{});
+
     // 引数なし、返り値なしの関数
     greet();
-    
+
     // 引数あり、返り値なしの関数
     greet_person("Alice");
-    
+
     // 引数あり、返り値ありの関数
     const sum = add(10, 20);
     std.debug.print("10 + 20 = {d}\n", .{sum});
-    
+
     // 複数の引数と返り値
     const result = calculate(15, 3);
     std.debug.print("15と3の計算結果: 和={d}, 差={d}, 積={d}\n", .{ result.sum, result.diff, result.product });
-    
+
     // ------------------------------------------
     // 引数の種類
     // ------------------------------------------
-    
-    std.debug.print("\n=== 引数の種類 ===\n");
-    
+
+    std.debug.print("\n=== 引数の種類 ===\n", .{});
+
     // 値渡し
-    var number = 42;
+    var number: i32 = 42;
     modify_value(number);
     std.debug.print("値渡し後: {d}\n", .{number}); // 変更されない
-    
+
     // 参照渡し（ポインタ）
     modify_reference(&number);
     std.debug.print("参照渡し後: {d}\n", .{number}); // 変更される
-    
+
     // 配列の渡し方
-    var numbers = [_]i32{ 1, 2, 3, 4, 5 };
+    const numbers = [_]i32{ 1, 2, 3, 4, 5 };
     print_array(&numbers);
-    
+
     // スライスの渡し方
     const slice = numbers[1..4];
     print_slice(slice);
-    
+
     // ------------------------------------------
     // 可変長引数
     // ------------------------------------------
-    
-    std.debug.print("\n=== 可変長引数 ===\n");
-    
-    print_numbers(1, 2, 3);
-    print_numbers(10, 20, 30, 40, 50);
-    
+
+    std.debug.print("\n=== 可変長引数 ===\n", .{});
+
+    print_numbers(.{ 1, 2, 3 });
+    print_numbers(.{ 10, 20, 30, 40, 50 });
+
     // ------------------------------------------
     // 関数ポインタ
     // ------------------------------------------
-    
-    std.debug.print("\n=== 関数ポインタ ===\n");
-    
+
+    std.debug.print("\n=== 関数ポインタ ===\n", .{});
+
     // 関数ポインタの宣言と使用
     const add_func = add;
     const result_from_ptr = add_func(5, 7);
     std.debug.print("関数ポインタ経由: {d}\n", .{result_from_ptr});
-    
+
     // 関数を引数として渡す
     const add_result = apply_operation(10, 5, add);
     const mult_result = apply_operation(10, 5, multiply);
     std.debug.print("apply_operation(10, 5, add): {d}\n", .{add_result});
     std.debug.print("apply_operation(10, 5, multiply): {d}\n", .{mult_result});
-    
+
     // ------------------------------------------
-    // 匿名関数（クロージャ）  
+    // 匿名関数（クロージャ）
     // ------------------------------------------
-    
-    std.debug.print("\n=== 匿名関数 ===\n");
-    
+
+    std.debug.print("\n=== 匿名関数 ===\n", .{});
+
     // 匿名関数の定義と使用
     const square = struct {
         fn call(x: i32) i32 {
             return x * x;
         }
     }.call;
-    
+
     std.debug.print("5の二乗: {d}\n", .{square(5)});
-    
+
     // ------------------------------------------
     // ジェネリック関数
     // ------------------------------------------
-    
-    std.debug.print("\n=== ジェネリック関数 ===\n");
-    
+
+    std.debug.print("\n=== ジェネリック関数 ===\n", .{});
+
     // 型パラメータを持つ関数
     const max_int = max(i32, 10, 20);
     const max_float = max(f32, 3.14, 2.71);
     std.debug.print("max(10, 20): {d}\n", .{max_int});
     std.debug.print("max(3.14, 2.71): {d}\n", .{max_float});
-    
+
     // ジェネリック関数でスライスを処理
     const int_slice = [_]i32{ 1, 5, 3, 9, 2 };
     const float_slice = [_]f32{ 1.1, 5.5, 3.3, 9.9, 2.2 };
-    
+
     std.debug.print("整数配列の最大値: {d}\n", .{find_max(i32, &int_slice)});
     std.debug.print("浮動小数点配列の最大値: {d}\n", .{find_max(f32, &float_slice)});
-    
+
     // ------------------------------------------
     // 再帰関数
     // ------------------------------------------
-    
-    std.debug.print("\n=== 再帰関数 ===\n");
-    
+
+    std.debug.print("\n=== 再帰関数 ===\n", .{});
+
     const factorial_5 = factorial(5);
     std.debug.print("5! = {d}\n", .{factorial_5});
-    
+
     const fib_10 = fibonacci(10);
     std.debug.print("fibonacci(10) = {d}\n", .{fib_10});
-    
+
     // ------------------------------------------
     // エラーを返す関数
     // ------------------------------------------
-    
-    std.debug.print("\n=== エラーを返す関数 ===\n");
-    
+
+    std.debug.print("\n=== エラーを返す関数 ===\n", .{});
+
     // 正常なケース
-    if (divide(10, 2)) |result| {
-        std.debug.print("10 / 2 = {d}\n", .{result});
+    if (divide(10, 2)) |div_result| {
+        std.debug.print("10 / 2 = {d}\n", .{div_result});
     } else |err| {
         std.debug.print("エラー: {}\n", .{err});
     }
-    
+
     // エラーケース
-    if (divide(10, 0)) |result| {
-        std.debug.print("10 / 0 = {d}\n", .{result});
+    if (divide(10, 0)) |div_result| {
+        std.debug.print("10 / 0 = {d}\n", .{div_result});
     } else |err| {
         std.debug.print("エラー: {}\n", .{err});
     }
@@ -149,7 +149,7 @@ pub fn main() !void {
 
 // 引数なし、返り値なし
 fn greet() void {
-    std.debug.print("こんにちは！\n");
+    std.debug.print("こんにちは！\n", .{});
 }
 
 // 引数あり、返り値なし
@@ -193,29 +193,29 @@ fn modify_reference(value: *i32) void {
 
 // 配列を受け取る関数
 fn print_array(arr: *const [5]i32) void {
-    std.debug.print("配列: ");
+    std.debug.print("配列: ", .{});
     for (arr) |value| {
         std.debug.print("{d} ", .{value});
     }
-    std.debug.print("\n");
+    std.debug.print("\n", .{});
 }
 
 // スライスを受け取る関数
 fn print_slice(slice: []const i32) void {
-    std.debug.print("スライス: ");
+    std.debug.print("スライス: ", .{});
     for (slice) |value| {
         std.debug.print("{d} ", .{value});
     }
-    std.debug.print("\n");
+    std.debug.print("\n", .{});
 }
 
 // 可変長引数関数
 fn print_numbers(args: anytype) void {
-    std.debug.print("数値: ");
+    std.debug.print("数値: ", .{});
     inline for (args) |arg| {
         std.debug.print("{d} ", .{arg});
     }
-    std.debug.print("\n");
+    std.debug.print("\n", .{});
 }
 
 // 関数を引数として受け取る関数

@@ -4,175 +4,175 @@ pub fn main() !void {
     // ==========================================
     // コンパイル時計算（comptime）
     // ==========================================
-    
-    std.debug.print("=== Zigのコンパイル時計算 ===\n");
-    
+
+    std.debug.print("=== Zigのコンパイル時計算 ===\n", .{});
+
     // ------------------------------------------
     // 基本的なcomptime
     // ------------------------------------------
-    
-    std.debug.print("\n=== 基本的なcomptime ===\n");
-    
+
+    std.debug.print("\n=== 基本的なcomptime ===\n", .{});
+
     // コンパイル時に計算される定数
     const compile_time_result = comptime fibonacci(10);
     std.debug.print("コンパイル時に計算されたフィボナッチ数列の10番目: {d}\n", .{compile_time_result});
-    
+
     // コンパイル時の型生成
     const IntArray = comptime create_array_type(i32, 5);
     const int_array: IntArray = [_]i32{ 1, 2, 3, 4, 5 };
-    
-    std.debug.print("コンパイル時に生成された型の配列: ");
+
+    std.debug.print("コンパイル時に生成された型の配列: ", .{});
     for (int_array) |value| {
         std.debug.print("{d} ", .{value});
     }
-    std.debug.print("\n");
-    
+    std.debug.print("\n", .{});
+
     // ------------------------------------------
     // comptime引数
     // ------------------------------------------
-    
-    std.debug.print("\n=== comptime引数 ===\n");
-    
+
+    std.debug.print("\n=== comptime引数 ===\n", .{});
+
     // ジェネリック関数でのcomptime使用
     const result1 = generic_add(i32, 10, 20);
     const result2 = generic_add(f32, 3.14, 2.86);
-    
+
     std.debug.print("ジェネリック加算 (i32): {d}\n", .{result1});
     std.debug.print("ジェネリック加算 (f32): {d}\n", .{result2});
-    
+
     // 配列サイズをcomptime引数として受け取る
     const small_array = create_initialized_array(3, 42);
     const large_array = create_initialized_array(7, 100);
-    
-    std.debug.print("小さな配列: ");
+
+    std.debug.print("小さな配列: ", .{});
     for (small_array) |value| {
         std.debug.print("{d} ", .{value});
     }
-    std.debug.print("\n");
-    
-    std.debug.print("大きな配列: ");
+    std.debug.print("\n", .{});
+
+    std.debug.print("大きな配列: ", .{});
     for (large_array) |value| {
         std.debug.print("{d} ", .{value});
     }
-    std.debug.print("\n");
-    
+    std.debug.print("\n", .{});
+
     // ------------------------------------------
     // コンパイル時の型操作
     // ------------------------------------------
-    
-    std.debug.print("\n=== コンパイル時の型操作 ===\n");
-    
+
+    std.debug.print("\n=== コンパイル時の型操作 ===\n", .{});
+
     // 型情報の取得
     print_type_info(@TypeOf(42));
     print_type_info(@TypeOf(3.14));
     print_type_info(@TypeOf("Hello"));
     print_type_info(@TypeOf(true));
-    
+
     // 構造体の型情報
     const Person = struct {
         name: []const u8,
         age: u32,
         height: f32,
     };
-    
+
     print_struct_info(Person);
-    
+
     // ------------------------------------------
     // コンパイル時のループ
     // ------------------------------------------
-    
-    std.debug.print("\n=== コンパイル時のループ ===\n");
-    
+
+    std.debug.print("\n=== コンパイル時のループ ===\n", .{});
+
     // コンパイル時に複数の型で同じ処理を実行
     const types = [_]type{ i8, i16, i32, i64, u8, u16, u32, u64 };
-    
-    std.debug.print("各整数型のサイズ:\n");
+
+    std.debug.print("各整数型のサイズ:\n", .{});
     inline for (types) |T| {
         std.debug.print("{s}: {d} bytes\n", .{ @typeName(T), @sizeOf(T) });
     }
-    
+
     // ------------------------------------------
     // コンパイル時の条件分岐
     // ------------------------------------------
-    
-    std.debug.print("\n=== コンパイル時の条件分岐 ===\n");
-    
+
+    std.debug.print("\n=== コンパイル時の条件分岐 ===\n", .{});
+
     // プラットフォーム固有のコード
     const platform_specific = comptime get_platform_info();
     std.debug.print("プラットフォーム情報: {s}\n", .{platform_specific});
-    
+
     // デバッグビルド専用のコード
     if (comptime std.debug.runtime_safety) {
-        std.debug.print("デバッグビルドで実行中\n");
+        std.debug.print("デバッグビルドで実行中\n", .{});
     } else {
-        std.debug.print("リリースビルドで実行中\n");
+        std.debug.print("リリースビルドで実行中\n", .{});
     }
-    
+
     // ------------------------------------------
     // メタプログラミング
     // ------------------------------------------
-    
-    std.debug.print("\n=== メタプログラミング ===\n");
-    
+
+    std.debug.print("\n=== メタプログラミング ===\n", .{});
+
     // 構造体の自動生成
     const Point2D = create_point_type(f32, 2);
     const Point3D = create_point_type(f64, 3);
-    
+
     const p2d = Point2D{ .x = 1.0, .y = 2.0 };
     const p3d = Point3D{ .x = 1.0, .y = 2.0, .z = 3.0 };
-    
+
     std.debug.print("2D点: ({d}, {d})\n", .{ p2d.x, p2d.y });
     std.debug.print("3D点: ({d}, {d}, {d})\n", .{ p3d.x, p3d.y, p3d.z });
-    
+
     // ------------------------------------------
     // コンパイル時の文字列操作
     // ------------------------------------------
-    
-    std.debug.print("\n=== コンパイル時の文字列操作 ===\n");
-    
+
+    std.debug.print("\n=== コンパイル時の文字列操作 ===\n", .{});
+
     // コンパイル時に文字列を結合
     const greeting = comptime "Hello, " ++ "Zig!";
     std.debug.print("コンパイル時結合文字列: {s}\n", .{greeting});
-    
+
     // 型名を使った動的な文字列生成
     const type_message = comptime "This is a " ++ @typeName(i32);
     std.debug.print("型名メッセージ: {s}\n", .{type_message});
-    
+
     // ------------------------------------------
     // ビルド時設定
     // ------------------------------------------
-    
-    std.debug.print("\n=== ビルド時設定 ===\n");
-    
+
+    std.debug.print("\n=== ビルド時設定 ===\n", .{});
+
     // ビルド時の設定に基づく条件分岐
     const config = comptime BuildConfig{
         .debug_mode = true,
         .optimization_level = 2,
         .feature_flags = .{ .networking = true, .graphics = false },
     };
-    
+
     if (comptime config.debug_mode) {
-        std.debug.print("デバッグモードが有効です\n");
+        std.debug.print("デバッグモードが有効です\n", .{});
     }
-    
+
     std.debug.print("最適化レベル: {d}\n", .{config.optimization_level});
-    
+
     if (comptime config.feature_flags.networking) {
-        std.debug.print("ネットワーク機能が有効です\n");
+        std.debug.print("ネットワーク機能が有効です\n", .{});
     }
-    
+
     if (comptime config.feature_flags.graphics) {
-        std.debug.print("グラフィック機能が有効です\n");
+        std.debug.print("グラフィック機能が有効です\n", .{});
     } else {
-        std.debug.print("グラフィック機能は無効です\n");
+        std.debug.print("グラフィック機能は無効です\n", .{});
     }
-    
+
     // ------------------------------------------
     // コンパイル時テスト
     // ------------------------------------------
-    
-    std.debug.print("\n=== コンパイル時テスト ===\n");
-    
+
+    std.debug.print("\n=== コンパイル時テスト ===\n", .{});
+
     // コンパイル時にテストを実行
     comptime {
         const test_result = fibonacci(5);
@@ -180,8 +180,8 @@ pub fn main() !void {
             @compileError("fibonacci(5) should return 5");
         }
     }
-    
-    std.debug.print("コンパイル時テストが成功しました\n");
+
+    std.debug.print("コンパイル時テストが成功しました\n", .{});
 }
 
 // ------------------------------------------
@@ -212,37 +212,40 @@ fn create_initialized_array(comptime size: usize, value: i32) [size]i32 {
 // 型情報を表示
 fn print_type_info(comptime T: type) void {
     const info = @typeInfo(T);
-    
+
     std.debug.print("型: {s}, 種類: ", .{@typeName(T)});
-    
+
     switch (info) {
-        .Int => |int_info| {
+        .int => |int_info| {
             const sign = if (int_info.signedness == .signed) "signed" else "unsigned";
             std.debug.print("整数 ({s}, {d}bit)\n", .{ sign, int_info.bits });
         },
-        .Float => |float_info| {
+        .float => |float_info| {
             std.debug.print("浮動小数点 ({d}bit)\n", .{float_info.bits});
         },
-        .Bool => std.debug.print("論理型\n"),
-        .Pointer => |ptr_info| {
+        .bool => std.debug.print("論理型\n", .{}),
+        .pointer => |ptr_info| {
             std.debug.print("ポインタ (子の型: {s})\n", .{@typeName(ptr_info.child)});
         },
-        else => std.debug.print("その他\n"),
+        else => std.debug.print("その他\n", .{}),
     }
 }
 
 // 構造体の情報を表示
 fn print_struct_info(comptime T: type) void {
     const info = @typeInfo(T);
-    
-    if (info != .Struct) {
-        std.debug.print("{s} は構造体ではありません\n", .{@typeName(T)});
-        return;
+
+    switch (info) {
+        .struct => {},
+        else => {
+            std.debug.print("{s} は構造体ではありません\n", .{@typeName(T)});
+            return;
+        },
     }
-    
-    const struct_info = info.Struct;
+
+    const struct_info = info.@"struct";
     std.debug.print("構造体 {s} のフィールド数: {d}\n", .{ @typeName(T), struct_info.fields.len });
-    
+
     inline for (struct_info.fields) |field| {
         std.debug.print("- {s}: {s}\n", .{ field.name, @typeName(field.type) });
     }
@@ -250,7 +253,7 @@ fn print_struct_info(comptime T: type) void {
 
 // プラットフォーム情報を取得
 fn get_platform_info() []const u8 {
-    return switch (std.builtin.os.tag) {
+    return switch (std.builtin.target.os.tag) {
         .windows => "Windows",
         .macos => "macOS",
         .linux => "Linux",
@@ -283,7 +286,7 @@ const BuildConfig = struct {
     debug_mode: bool,
     optimization_level: u8,
     feature_flags: FeatureFlags,
-    
+
     const FeatureFlags = struct {
         networking: bool,
         graphics: bool,
