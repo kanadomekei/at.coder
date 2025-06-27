@@ -1,0 +1,12 @@
+{
+    "task": {
+        "program": [
+            ["go/main.go", "go/main.go"]
+        ],
+        "static": [
+            ["rust/new.sh", "rust/new.sh"]
+        ],
+        "cmd": "cd rust && ../rust/new.sh",
+        "submit": "go/main.go"
+    }
+} 

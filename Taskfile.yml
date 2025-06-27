@@ -13,11 +13,11 @@ tasks:
     cmds:
       - |
         if [ -f main.go ]; then
-          oj test -d tests -c "go run main.go"
+          oj test -d ../tests -c "go run main.go"
         elif [ -f Cargo.toml ]; then
-          oj test -d tests -c "cargo run"
+          oj test -d ../tests -c "cargo run"
         else
-          echo "No go or rust files found."
+          echo "No go or rust files found to test."
           exit 1
         fi
 
@@ -31,6 +31,6 @@ tasks:
         elif [ -f Cargo.toml ]; then
           acc submit
         else
-          echo "No go or rust files found."
+          echo "No go or rust files found to submit."
           exit 1
         fi
