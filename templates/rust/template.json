@@ -1,0 +1,8 @@
+{
+    "task": {
+        "program": ["src/main.rs"],
+        "static": ["new.sh"],
+        "cmd": "./new.sh",
+        "submit": "src/main.rs"
+    }
+} 
