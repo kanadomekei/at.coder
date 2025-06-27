@@ -1,8 +1,8 @@
 {
     "task": {
         "program": ["src/main.rs"],
-        "static": ["new.sh"],
-        "cmd": "./new.sh",
+        "static": ["setup_rust.sh"],
+        "cmd": "./setup_rust.sh",
         "submit": "src/main.rs"
     }
 } 
