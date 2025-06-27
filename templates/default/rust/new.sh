@@ -11,4 +11,7 @@ rm -rf "$TMP_DIR"
 
 # 便利なクレートを依存関係に追加
 cargo add proconio@0.3.6
-cargo add itertools@0.9.0 
+cargo add itertools@0.9.0
+
+# 実行後、このスクリプト自体を削除する
+rm -- "$0" 
