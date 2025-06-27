@@ -2,18 +2,20 @@ version: '3'
 
 tasks:
   new:
-    desc: "Create a new contest directory using acc."
+    desc: "Create a new contest directory in ./ABC/ using acc."
+    dir: ABC
     cmds:
       - acc new {{.CLI_ARGS}}
 
   test:
     desc: "Test the solution in the current directory using oj."
+    dir: '{{.PWD}}'
     cmds:
       - |
         if [ -f main.go ]; then
-          oj test -c "go run main.go"
+          oj test -d tests -c "go run main.go"
         elif [ -f Cargo.toml ]; then
-          oj test -c "cargo run"
+          oj test -d tests -c "cargo run"
         else
           echo "No go or rust files found."
           exit 1
@@ -21,6 +23,7 @@ tasks:
 
   submit:
     desc: "Submit the solution in the current directory using acc."
+    dir: '{{.PWD}}'
     cmds:
       - |
         if [ -f main.go ]; then
