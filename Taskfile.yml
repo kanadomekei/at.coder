@@ -7,10 +7,44 @@ tasks:
     cmds:
       - acc new {{.CLI_ARGS}}
 
-  test:
-    desc: "Test the solution in the current directory using oj."
+  fmt:
+    desc: "Format Go or Rust code in the current directory."
     dir: '{{.PWD}}'
     cmds:
+      - |
+        if [ -f main.go ]; then
+          echo "Formatting Go code..."
+          gofmt -w .
+        elif [ -f Cargo.toml ]; then
+          echo "Formatting Rust code..."
+          cargo fmt
+        else
+          echo "No go or rust files found to format."
+          exit 1
+        fi
+
+  lint:
+    desc: "Lint Go or Rust code in the current directory."
+    dir: '{{.PWD}}'
+    cmds:
+      - |
+        if [ -f main.go ]; then
+          echo "Linting Go code..."
+          go vet ./...
+        elif [ -f Cargo.toml ]; then
+          echo "Linting Rust code..."
+          cargo clippy
+        else
+          echo "No go or rust files found to lint."
+          exit 1
+        fi
+
+  test:
+    desc: "Formats, lints, and tests the solution."
+    dir: '{{.PWD}}'
+    cmds:
+      - task: fmt
+      - task: lint
       - |
         if [ -f main.go ]; then
           oj test -d ../tests -c "go run main.go"
