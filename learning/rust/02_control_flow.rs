@@ -131,12 +131,10 @@ fn main() {
     'outer: loop {
         println!("外側のループに入りました");
         
-        'inner: loop {
+        loop {
             println!("内側のループに入りました");
             break 'outer; // 外側のループを抜ける
         }
-        
-        println!("この行は実行されません");
     }
     println!("外側のループを抜けました");
     

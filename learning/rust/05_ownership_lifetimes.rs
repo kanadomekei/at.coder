@@ -258,6 +258,9 @@ fn main() {
         
         println!("変更後の値: {}", value.borrow());
     }
+    
+    // 追加のデモ関数を呼び出し
+    demo_longest_with_announcement();
 }
 
 // ------------------------------------------
@@ -364,4 +367,12 @@ where
     } else {
         y
     }
+}
+
+// longest_with_an_announcement関数のデモ用追加
+fn demo_longest_with_announcement() {
+    println!("\n=== ライフタイム付き関数のデモ ===");
+    let announcement = "新機能のお知らせ";
+    let result = longest_with_an_announcement("hello", "world", announcement);
+    println!("最長の文字列: {}", result);
 }

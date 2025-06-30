@@ -147,11 +147,11 @@ fn main() {
     let error: Result<i32, String> = Err(String::from("エラー"));
     
     // map メソッド
-    let doubled = success.map(|x| x * 2);
+    let doubled = success.clone().map(|x| x * 2);
     println!("map結果: {:?}", doubled);
     
     // map_err メソッド
-    let detailed_error = error.map_err(|e| format!("詳細エラー: {}", e));
+    let detailed_error = error.clone().map_err(|e| format!("詳細エラー: {}", e));
     println!("map_err結果: {:?}", detailed_error);
     
     // and_then メソッド
@@ -159,11 +159,11 @@ fn main() {
     println!("and_then結果: {:?}", chained);
     
     // or_else メソッド
-    let fallback = error.or_else(|_| Ok(0));
+    let fallback: Result<i32, String> = error.clone().or_else(|_| Ok(0));
     println!("or_else結果: {:?}", fallback);
     
     // unwrap_or メソッド
-    let value_or_default = error.unwrap_or(-1);
+    let value_or_default = error.clone().unwrap_or(-1);
     println!("unwrap_or結果: {}", value_or_default);
     
     // unwrap_or_else メソッド
@@ -211,6 +211,22 @@ fn main() {
     panic::set_hook(Box::new(|panic_info| {
         println!("カスタムパニックハンドラ: {:?}", panic_info);
     }));
+    
+    // User構造体とConfig構造体の使用例
+    println!("\n=== 構造体の使用例 ===");
+    let user = User {
+        name: String::from("Alice"),
+        age: 30,
+        email: String::from("alice@example.com"),
+    };
+    
+    let config = Config {
+        database_url: String::from("localhost:5432"),
+        timeout: 30,
+    };
+    
+    println!("ユーザー: {} ({}歳) - {}", user.name, user.age, user.email);
+    println!("設定: DB URL: {}, タイムアウト: {}秒", config.database_url, config.timeout);
 }
 
 // ------------------------------------------

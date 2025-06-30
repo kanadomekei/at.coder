@@ -13,6 +13,7 @@ fn main() {
     
     println!("記事の要約: {}", article.summarize());
     println!("デフォルト実装: {}", article.summarize_default());
+    println!("記事の内容: {}", article.content);
     
     // ジェネリクス
     let number_list = vec![34, 50, 25, 100, 65];
@@ -39,6 +40,8 @@ fn main() {
         reply: false,
         retweet: false,
     };
+    
+    println!("ツイートの返信フラグ: {}, リツイートフラグ: {}", tweet.reply, tweet.retweet);
     
     notify(&tweet);
     notify_display(&tweet);

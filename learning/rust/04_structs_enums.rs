@@ -66,8 +66,8 @@ fn main() {
     
     println!("\n=== Unit-like構造体 ===");
     
-    let subject = AlwaysEqual;
-    let another_subject = AlwaysEqual;
+    let _subject = AlwaysEqual;
+    let _another_subject = AlwaysEqual;
     
     println!("Unit-like構造体は主にトレイト実装に使用されます");
     
@@ -249,14 +249,20 @@ fn main() {
     }
     
     // if let with else
-    let mut count = 0;
+    let mut _count = 0;
     let coin = Coin::Quarter(UsState::Alaska);
     
     if let Coin::Quarter(state) = coin {
         println!("州のクォーター: {:?}", state);
     } else {
-        count += 1;
+        _count += 1;
     }
+    
+    // デモンストレーション用の使用
+    let _penny = Coin::Penny;
+    let _nickel = Coin::Nickel;
+    let _dime = Coin::Dime;
+    let _alabama = UsState::Alabama;
     
     // ------------------------------------------
     // ジェネリック構造体
@@ -273,11 +279,14 @@ fn main() {
     println!("混合ポイント: x = {}, y = {}", mixed_point.x, mixed_point.y);
     
     // ジェネリックメソッド
-    let p1 = GenericPoint { x: 5, y: 10.4 };
-    let p2 = GenericPoint { x: "Hello", y: 'c' };
+    let p1 = MixedPoint { x: 5, y: 10.4 };
+    let p2 = MixedPoint { x: "Hello", y: 'c' };
     let p3 = p1.mixup(p2);
     
     println!("混合結果: x = {}, y = {}", p3.x, p3.y);
+    
+    // x()メソッドのデモンストレーション
+    println!("integer_pointのx座標: {}", integer_point.x());
 }
 
 // ------------------------------------------
@@ -405,9 +414,9 @@ impl<T> GenericPoint<T> {
     }
 }
 
-impl<T, U> GenericPoint<T, U> {
-    fn mixup<V, W>(self, other: GenericPoint<V, W>) -> GenericPoint<T, W> {
-        GenericPoint {
+impl<T, U> MixedPoint<T, U> {
+    fn mixup<V, W>(self, other: MixedPoint<V, W>) -> MixedPoint<T, W> {
+        MixedPoint {
             x: self.x,
             y: other.y,
         }
