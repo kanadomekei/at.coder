@@ -2,7 +2,8 @@
     "task": {
         "program": [
             ["go/main.go", "go/main.go"],
-            ["zig/main.zig", "zig/main.zig"]
+            ["zig/main.zig", "zig/main.zig"],
+            ["cpp/main.cpp", "cpp/main.cpp"]
         ],
         "static": [
             ["rust/setup_rust.sh", "rust/setup_rust.sh"]

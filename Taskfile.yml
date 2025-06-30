@@ -21,8 +21,11 @@ tasks:
         elif [ -f main.zig ]; then
           echo "Formatting Zig code..."
           zig fmt main.zig
+        elif [ -f main.cpp ]; then
+          echo "Formatting C++ code..."
+          clang-format -i main.cpp
         else
-          echo "No go, rust, or zig files found to format."
+          echo "No go, rust, zig, or cpp files found to format."
           exit 1
         fi
 
@@ -40,8 +43,11 @@ tasks:
         elif [ -f main.zig ]; then
           echo "Linting Zig code..."
           zig build-exe main.zig && rm main main.o
+        elif [ -f main.cpp ]; then
+          echo "Linting C++ code..."
+          g++ -Wall -Wextra -std=c++17 -o main main.cpp && rm main
         else
-          echo "No go, rust, or zig files found to lint."
+          echo "No go, rust, zig, or cpp files found to lint."
           exit 1
         fi
 
@@ -58,8 +64,12 @@ tasks:
           oj test -d ../tests -c "cargo run"
         elif [ -f main.zig ]; then
           oj test -d ../tests -c "zig run main.zig"
+        elif [ -f main.cpp ]; then
+          g++ -std=c++17 -o main main.cpp
+          oj test -d ../tests -c "./main"
+          rm main
         else
-          echo "No go, rust, or zig files found to test."
+          echo "No go, rust, zig, or cpp files found to test."
           exit 1
         fi
 
@@ -74,7 +84,9 @@ tasks:
           acc submit
         elif [ -f main.zig ]; then
           acc submit main.zig
+        elif [ -f main.cpp ]; then
+          acc submit main.cpp
         else
-          echo "No go, rust, or zig files found to submit."
+          echo "No go, rust, zig, or cpp files found to submit."
           exit 1
         fi

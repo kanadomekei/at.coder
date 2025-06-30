@@ -4,14 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This is an AtCoder competitive programming environment supporting Go, Rust, and Zig languages. The project uses `atcoder-cli` (acc) and `Taskfile` to streamline contest preparation, testing, and submission workflows.
+This is an AtCoder competitive programming environment supporting Go, Rust, Zig, and C++ languages. The project uses `atcoder-cli` (acc) and `Taskfile` to streamline contest preparation, testing, and submission workflows.
 
 ## Core Commands
 
 ### Contest Management
 - `task new -- <contest_id>` - Create new contest directory with problem templates (run from repo root)
   - Creates `ABC/<contest_id>/` with subdirectories for each problem (a, b, c, etc.)
-  - Each problem contains `go/`, `rust/`, and `zig/` subdirectories with language-specific setups
+  - Each problem contains `go/`, `rust/`, `zig/`, and `cpp/` subdirectories with language-specific setups
 
 ### Development Workflow (run from language-specific directories)
 - `task test` - Format, lint, and test solution against sample cases
@@ -23,6 +23,7 @@ This is an AtCoder competitive programming environment supporting Go, Rust, and 
 - **Go**: `go run main.go`, `go mod init main`
 - **Rust**: `cargo run`, `cargo new`, `cargo add <crate>`
 - **Zig**: `zig run main.zig`, `zig build-exe main.zig`
+- **C++**: `g++ -std=c++17 -o main main.cpp && ./main`
 
 ## Project Structure
 
@@ -39,11 +40,13 @@ at.coder/
 ├── templates/default/        # Language templates for new problems
 │   ├── go/
 │   ├── rust/
-│   └── zig/
-└── learning/                 # Educational materials for all three languages
+│   ├── zig/
+│   └── cpp/
+└── learning/                 # Educational materials for all four languages
     ├── go/
     ├── rust/
-    └── zig/
+    ├── zig/
+    └── cpp/
 ```
 
 ## Language Setup Details
@@ -66,6 +69,11 @@ at.coder/
 - Direct compilation and execution without package manager
 - Submit file: `main.zig`
 
+### C++ Projects
+- Uses `main.cpp` as entry point
+- Standard compilation with g++ and C++17 standard
+- Submit file: `main.cpp`
+
 ## Testing Framework
 
 Uses `online-judge-tools` (oj) for automated testing:
@@ -82,8 +90,8 @@ Uses `online-judge-tools` (oj) for automated testing:
 
 ### Typical Workflow
 1. `task new -- abc123` (from repo root)
-2. `cd ABC/abc123/a/rust` (or preferred language)
-3. Edit solution in `src/main.rs` (or `main.go`, `main.zig`)
+2. `cd ABC/abc123/a/rust` (or preferred language: go, rust, zig, cpp)
+3. Edit solution in `src/main.rs` (or `main.go`, `main.zig`, `main.cpp`)
 4. `task test` to verify against samples
 5. `task submit` to submit to AtCoder
 
@@ -95,7 +103,7 @@ Uses `online-judge-tools` (oj) for automated testing:
 ## External Dependencies
 
 Required tools:
-- Go, Rust, Zig compilers
+- Go, Rust, Zig, C++ compilers (g++)
 - Node.js (for atcoder-cli)
 - Python (for online-judge-tools)
 - Taskfile
