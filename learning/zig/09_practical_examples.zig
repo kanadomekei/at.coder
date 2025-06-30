@@ -98,7 +98,7 @@ pub fn main() !void {
         try bst.insert(value);
     }
 
-    std.debug.print("挿入した値: ");
+    std.debug.print("挿入した値: ", .{});
     for (values) |value| {
         std.debug.print("{d} ", .{value});
     }
@@ -321,12 +321,12 @@ const FileProcessor = struct {
         var word_count: u32 = 0;
         var char_count: u32 = 0;
 
-        var lines = std.mem.split(u8, content, "\n");
+        var lines = std.mem.splitScalar(u8, content, '\n');
         while (lines.next()) |line| {
             line_count += 1;
             char_count += @intCast(line.len);
 
-            var words = std.mem.split(u8, line, " ");
+            var words = std.mem.splitScalar(u8, line, ' ');
             while (words.next()) |word| {
                 if (word.len > 0) {
                     word_count += 1;
@@ -474,7 +474,7 @@ const NetworkSimulator = struct {
             .from = from,
             .to = to,
             .data = data,
-            .timestamp = std.time.milliTimestamp(),
+            .timestamp = @intCast(std.time.milliTimestamp()),
         };
         try self.packet_log.append(packet);
     }

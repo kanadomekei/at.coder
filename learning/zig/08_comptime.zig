@@ -236,7 +236,7 @@ fn print_struct_info(comptime T: type) void {
     const info = @typeInfo(T);
 
     switch (info) {
-        .struct => {},
+        .@"struct" => {},
         else => {
             std.debug.print("{s} は構造体ではありません\n", .{@typeName(T)});
             return;
@@ -253,7 +253,7 @@ fn print_struct_info(comptime T: type) void {
 
 // プラットフォーム情報を取得
 fn get_platform_info() []const u8 {
-    return switch (std.builtin.target.os.tag) {
+    return switch (@import("builtin").target.os.tag) {
         .windows => "Windows",
         .macos => "macOS",
         .linux => "Linux",
