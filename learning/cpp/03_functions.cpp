@@ -1,98 +1,82 @@
-// C++ と Zig の関数の比較
+
 #include <iostream>
 #include <string>
-#include <vector>
 
-// --- Zig との比較用コメント ---
-// (省略)
-// --------------------------
+// C++入門: 03 - 関数
 
-// --- 1. 基本的な関数 ---
+// 関数は、特定のタスクを実行するコードのブロックです。
+// コードを再利用し、整理し、管理しやすくするために不可欠です。
+
+// 1. 関数の定義
+// --------------------
+// 戻り値の型 関数名(引数の型 引数名, ...) { ... }
+
+// 引数も戻り値もない、最もシンプルな関数
+void say_hello() {
+    std::cout << "こんにちは、世界！" << std::endl;
+}
+
+// 引数を受け取り、戻り値を返さない関数
+void greet(const std::string& name) {
+    std::cout << "こんにちは、" << name << "さん！" << std::endl;
+}
+
+// 2つの整数を受け取り、その合計を返す関数
 int add(int a, int b) {
     return a + b;
 }
 
-// --- 2. 戻り値がない関数 (void) ---
-void printMessage(const std::string& message) {
-    std::cout << message << std::endl;
+// 2. 関数のオーバーロード
+// --------------------
+// C++では、同じ関数名で引数の型や数が異なる関数を複数定義できます。
+// これを「関数のオーバーロード」と呼びます。
+
+// double型の引数を2つ受け取るadd関数
+double add(double a, double b) {
+    return a + b;
 }
 
-// --- 3. 引数の渡し方 ---
-void modifyValue(int value) {
-    value = 100;
-    std::cout << "Inside modifyValue: " << value << std::endl;
-}
-
-void modifyReference(int& value) {
-    value = 200;
-    std::cout << "Inside modifyReference: " << value << std::endl;
-}
-
-void printVector(const std::vector<int>& vec) {
-    std::cout << "Vector elements: ";
-    for (int num : vec) {
-        std::cout << num << " ";
-    }
-    std::cout << std::endl;
-}
-
-// --- 4. デフォルト引数 ---
-void showDialog(const std::string& text, const std::string& title = "Info", bool isError = false) {
-    std::cout << "-- " << title << " --" << (isError ? " [ERROR]" : "") << std::endl;
-    std::cout << text << std::endl;
-    std::cout << "--------------------" << std::endl;
-}
-
-// --- 5. 関数のオーバーロード ---
-int findMax(int a, int b) {
-    return (a > b) ? a : b;
-}
-
-double findMax(double a, double b) {
-    return (a > b) ? a : b;
-}
-
-// --- 6. 再帰関数 ---
-int factorial(int n) {
-    if (n <= 1) {
-        return 1;
-    }
-    return n * factorial(n - 1);
+// 3. デフォルト引数
+// --------------------
+// 関数の引数には、呼び出し時に省略された場合に適用されるデフォルト値を設定できます。
+void show_message(const std::string& message, const std::string& prefix = "[INFO]") {
+    std::cout << prefix << " " << message << std::endl;
 }
 
 int main() {
-    std::cout << "=== C++ と Zig の関数の比較 ===" << std::endl;
+    // --- 関数の呼び出し ---
 
-    std::cout << "\n--- 1. 基本的な関数の呼び出し ---" << std::endl;
-    int sum = add(10, 20);
-    std::cout << "add(10, 20) = " << sum << std::endl;
+    // say_hello関数の呼び出し
+    say_hello();
 
-    std::cout << "\n--- 2. void関数の呼び出し ---" << std::endl;
-    printMessage("Hello from a function!");
+    // greet関数の呼び出し
+    std::string user_name = "Keita";
+    greet(user_name);
 
-    std::cout << "\n--- 3. 引数の渡し方の比較 ---" << std::endl;
-    int original = 50;
-    std::cout << "Original value before calls: " << original << std::endl;
-    modifyValue(original);
-    std::cout << "Original value after modifyValue: " << original << std::endl;
-    modifyReference(original);
-    std::cout << "Original value after modifyReference: " << original << std::endl;
+    // add関数の呼び出しと結果の利用
+    int sum_int = add(5, 3);
+    std::cout << "5 + 3 = " << sum_int << std::endl;
 
-    std::vector<int> myVector = {1, 2, 3, 4, 5};
-    printVector(myVector);
+    // オーバーロードされたadd関数の呼び出し
+    double sum_double = add(2.5, 3.7);
+    std::cout << "2.5 + 3.7 = " << sum_double << std::endl;
 
-    std::cout << "\n--- 4. デフォルト引数の使用 ---" << std::endl;
-    showDialog("Operation successful.");
-    showDialog("File not found.", "File System", true);
+    // デフォルト引数を持つ関数の呼び出し
+    show_message("処理が完了しました。"); // prefixを省略
+    show_message("致命的なエラーが発生しました。", "[ERROR]"); // prefixを指定
 
-    std::cout << "\n--- 5. オーバーロードされた関数の呼び出し ---" << std::endl;
-    std::cout << "Max of 10, 20 is " << findMax(10, 20) << std::endl;
-    std::cout << "Max of 3.14, 2.71 is " << findMax(3.14, 2.71) << std::endl;
 
-    std::cout << "\n--- 6. 再帰関数の呼び出し ---" << std::endl;
-    std::cout << "Factorial of 5 is " << factorial(5) << std::endl;
-
-    std::cout << "\n=== 関数の学習完了 ===" << std::endl;
+    // 4. main関数
+    // --------------------
+    // `main`関数は、C++プログラムが実行されるときに最初に呼び出される特別な関数です。
+    // `return 0;` はプログラムが正常に終了したことをOSに伝えます。
 
     return 0;
 }
+
+/*
+練習問題:
+1. 2つの整数を引数として受け取り、そのうち大きい方を返す`max`という名前の関数を書いてみましょう。
+2. 1つの`std::string`と1つの`int`を引数に取り、その文字列をintの回数だけ表示する`repeat_string`という関数を書いてみましょう。
+3. 三角形の底辺と高さを引数として受け取り、面積を計算して返す`triangle_area`という関数を書いてみましょう。(面積 = 底辺 * 高さ / 2)
+*/

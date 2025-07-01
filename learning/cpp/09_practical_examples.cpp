@@ -1,125 +1,124 @@
-// C++ と Zig の実践的なコード例の比較
 #include <iostream>
 #include <vector>
 #include <string>
-#include <numeric>   // std::accumulate, std::iota
-#include <algorithm> // std::sort, std::max_element
-#include <map>       // std::map (キーと値のペアを格納する連想配列)
+#include <numeric> // std::accumulate に必要
+#include <algorithm> // std::sort, std::max_element に必要
+#include <map>
 
-// --- Zig との比較用コメント ---
-// Zigの標準ライブラリ `std` には、C++のSTL(Standard Template Library)に
-// 相当する、様々なデータ構造やアルゴリズムが含まれています。
-//
-// - `std.ArrayList(T)`: C++の `std::vector` に相当
-// - `std.AutoHashMap(K, V)`: C++の `std::unordered_map` に相当
-// - `std.sort.sort(T, slice, context, lessThan)`: C++の `std::sort` に相当
-//
-// Zigでは、ジェネリックなデータ構造やアルゴリズムは、`comptime` を活用して
-// 非常に柔軟に実装されています。また、アロケータを明示的に渡す設計に
-// なっているため、メモリ管理の制御がしやすいのが特徴です。
-// --------------------------
+// C++入門: 09 - 実践的な例
 
-// --- 1. ジェネリックな Print 関数 (テンプレート活用) ---
-// あらゆるコンテナ(vector, arrayなど)の中身を綺麗に出力する関数
-template <typename T>
-void printContainer(const T& container, const std::string& name = "Container") {
-    std::cout << name << " (size: " << container.size() << "): { ";
-    // イテレータを使ってコンテナの要素を走査
-    for (auto it = container.begin(); it != container.end(); ++it) {
-        std::cout << *it << (std::next(it) != container.end() ? ", " : "");
+// これまでに学んだ知識を組み合わせて、より実践的な問題を解いてみましょう。
+// ここでは、競技プログラミングでよく見られるような、いくつかの典型的な問題を取り上げます。
+
+// --- 例題1: 合計値の計算 ---
+// N個の整数が与えられるので、その合計値を計算してください。
+void solve_sum() {
+    std::cout << "--- 例題1: 合計値 ---" << std::endl;
+    std::vector<int> numbers = {10, 20, 30, 40, 50};
+    
+    // 方法1: forループを使う
+    long long sum1 = 0; // 合計値が大きくなる可能性があるのでlong longを使う
+    for (int num : numbers) {
+        sum1 += num;
     }
-    std::cout << " }" << std::endl;
+    std::cout << "forループでの合計: " << sum1 << std::endl;
+
+    // 方法2: std::accumulate を使う (numericヘッダ)
+    // より簡潔で意図が明確
+    long long sum2 = std::accumulate(numbers.begin(), numbers.end(), 0LL);
+    // 0LLは long long 型の 0 を意味する
+    std::cout << "std::accumulateでの合計: " << sum2 << std::endl;
 }
 
-// --- 2. 構造体とソート (演算子オーバーロード) ---
-struct Team {
-    std::string name;
-    int score;
+// --- 例題2: 最大値とそのインデックス ---
+// N個の整数が与えられるので、その中の最大値と、それが最初に出現した位置（0-indexed）を求めてください。
+void solve_max_value() {
+    std::cout << "\n--- 例題2: 最大値とそのインデックス ---" << std::endl;
+    std::vector<int> scores = {60, 95, 80, 95, 70};
 
-    // `std::sort` などで使えるように、`<` 演算子をオーバーロードする
-    bool operator<(const Team& other) const {
-        // スコアが高い順にソートしたいので、比較を逆にする
-        if (score != other.score) {
-            return score > other.score;
-        }
-        // スコアが同じなら名前の辞書順
-        return name < other.name;
-    }
-};
-
-// --- 3. 頻度カウンター (map活用) ---
-// 文字列中の各文字の出現回数を数える
-void countCharacterFrequency() {
-    std::string text = "hello world, this is a test string.";
-    std::map<char, int> freq_map;
-
-    for (char c : text) {
-        // a-z の小文字のみカウント
-        if (c >= 'a' && c <= 'z') {
-            freq_map[c]++; // map[key]++ で簡単にインクリメントできる
+    // 方法1: forループで探す
+    int max_val = -1;
+    int max_idx = -1;
+    for (int i = 0; i < scores.size(); ++i) {
+        if (scores[i] > max_val) {
+            max_val = scores[i];
+            max_idx = i;
         }
     }
+    std::cout << "forループでの最大値: " << max_val << ", インデックス: " << max_idx << std::endl;
 
-    std::cout << "\nCharacter Frequency Map:" << std::endl;
-    for (const auto& pair : freq_map) {
-        std::cout << "  '" << pair.first << "': " << pair.second << std::endl;
+    // 方法2: STLアルゴリズムを使う (algorithmヘッダ)
+    auto max_it = std::max_element(scores.begin(), scores.end());
+    int max_val2 = *max_it;
+    int max_idx2 = std::distance(scores.begin(), max_it);
+    std::cout << "STLでの最大値: " << max_val2 << ", インデックス: " << max_idx2 << std::endl;
+}
+
+// --- 例題3: カードのカウンティング ---
+// N枚のカードがあり、それぞれに文字列が書かれています。
+// 各文字列が何回出現したかを数え上げてください。
+void solve_counting() {
+    std::cout << "\n--- 例題3: カードのカウンティング ---" << std::endl;
+    std::vector<std::string> cards = {"apple", "orange", "apple", "banana", "orange", "apple"};
+
+    // std::map を使ってカウントするのが定石
+    std::map<std::string, int> counts;
+    for (const std::string& card : cards) {
+        counts[card]++;
+    }
+
+    // 結果の表示
+    for (const auto& pair : counts) {
+        std::cout << pair.first << ": " << pair.second << "回" << std::endl;
     }
 }
+
+// --- 例題4: 条件を満たすペアの探索 ---
+// N個の整数からなる数列があります。和がちょうど100になる2つの異なる要素のペアは存在しますか？
+void solve_pair_sum() {
+    std::cout << "\n--- 例題4: 和が100になるペア ---" << std::endl;
+    std::vector<int> a = {10, 80, 30, 90, 40, 70};
+    bool found = false;
+
+    // 方法1: 二重ループ (Nが小さい場合に有効)
+    for (int i = 0; i < a.size(); ++i) {
+        for (int j = i + 1; j < a.size(); ++j) {
+            if (a[i] + a[j] == 100) {
+                found = true;
+                std::cout << "ペア発見 (二重ループ): (" << a[i] << ", " << a[j] << ")" << std::endl;
+                break; // 内側ループを抜ける
+            }
+        }
+        if (found) {
+            break; // 外側ループも抜ける
+        }
+    }
+
+    if (!found) {
+        std::cout << "ペアは見つかりませんでした。" << std::endl;
+    }
+    
+    // (参考) より効率的な方法: ソートやハッシュマップ(std::unordered_set)を使う方法もある
+}
+
 
 int main() {
-    std::cout << "=== C++ と Zig の実践的なコード例の比較 ===" << std::endl;
-
-    // --- 1. STLアルゴリズムの活用 ---
-    std::cout << "\n--- 1. STLアルゴリズムの活用 ---" << std::endl;
-    std::vector<int> numbers = {5, 2, 8, 1, 9, 4, 4};
-    printContainer(numbers, "Original vector");
-
-    // a) ソート
-    std::sort(numbers.begin(), numbers.end());
-    printContainer(numbers, "Sorted vector  ");
-
-    // b) 合計値
-    long long sum = std::accumulate(numbers.begin(), numbers.end(), 0LL);
-    std::cout << "Sum of elements: " << sum << std::endl;
-
-    // c) 最大値とそのイテレータ
-    auto max_it = std::max_element(numbers.begin(), numbers.end());
-    if (max_it != numbers.end()) {
-        std::cout << "Max element: " << *max_it 
-                  << " at index: " << std::distance(numbers.begin(), max_it) << std::endl;
-    }
-
-    // --- 2. カスタム構造体のソート ---
-    std::cout << "\n--- 2. カスタム構造体のソート ---" << std::endl;
-    std::vector<Team> teams = {
-        {"Dragons", 80},
-        {"Tigers", 95},
-        {"Swallows", 80},
-        {"Giants", 90}
-    };
-    
-    std::sort(teams.begin(), teams.end()); // Team::operator< が使われる
-
-    std::cout << "Sorted Teams (by score desc, then name asc):" << std::endl;
-    for (const auto& team : teams) {
-        std::cout << "  - " << team.name << " (" << team.score << ")" << std::endl;
-    }
-    // --- Zig との比較 ---
-    // Zigでカスタムソートを行う場合、比較関数を `std.sort.sort` に渡します。
-    // C++の演算子オーバーロードは便利ですが、コードの挙動が暗黙的になる側面も
-    // あります。Zigは、どのようなルールでソートするかが呼び出し側で明確に
-    // なる、より明示的なアプローチを好みます。
-
-    // --- 3. 頻度カウンター ---
-    countCharacterFrequency();
-    // --- Zig との比較 ---
-    // Zigでは `std.AutoHashMap` を使って同様の機能を実現します。
-    // `const count = try map.getOrPut(char, 0);` のようなAPIを使い、
-    // キーが存在しない場合の初期値を設定しつつ値を取得・更新します。
-    // C++の `map[key]++` は非常に簡潔ですが、キーが存在しない場合に
-    // デフォルトコンストラクタで値を生成するという暗黙の動作を伴います。
-
-    std::cout << "\n=== 実践的なコード例の学習完了 ===" << std::endl;
+    // 各例題の関数を呼び出す
+    solve_sum();
+    solve_max_value();
+    solve_counting();
+    solve_pair_sum();
 
     return 0;
 }
+
+/*
+ここから先へ:
+- AtCoderなどの競技プログラミングサイトの問題に挑戦してみましょう。
+  - A問題(Beginner Contest)は、基本的な入出力と簡単な計算が中心です。
+  - B問題は、ループや条件分岐、配列操作などが問われます。
+- `cin`での標準入力の受け取り方を学びましょう。
+  (例: `int N; std::cin >> N;`)
+- 計算量(オーダー)を意識することを始めましょう。Nが大きくなると、二重ループ(O(N^2))では
+  間に合わなくなることがあります。
+*/

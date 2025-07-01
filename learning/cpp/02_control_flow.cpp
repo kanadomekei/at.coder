@@ -1,178 +1,104 @@
-// C++ と Zig の制御構文の比較
 #include <iostream>
 #include <vector>
-#include <string>
 
-// --- Zig との比較用コメント ---
-// Zig の制御構文は、C++と似ている部分もありますが、より表現力が高く、
-// 安全性を重視した設計になっています。
-//
-// pub fn main() !void {
-//     // if文: C++と似ていますが、`()` は不要です。
-//     const score = 85;
-//     if (score >= 90) {
-//         // ...
-//     } else if (score >= 70) {
-//         // ...
-//     } else {
-//         // ...
-//     }
-//
-//     // switch文: C++より強力で、網羅的(exhaustive)であることが要求されます。
-//     const value = 1;
-//     switch (value) {
-//         1 => std.debug.print("One\n", .{}),
-//         2 => std.debug.print("Two\n", .{}),
-//         else => std.debug.print("Other\n", .{}), // `else` が必須
-//     }
-//
-//     // for文: イテレータブルなものに対して使います。
-//     const items = [_]u8{ 1, 2, 3 };
-//     for (items) |item, index| {
-//         std.debug.print("items[{}] = {}\n", .{index, item});
-//     }
-//
-//     // while文: C++と似ています。
-//     var i: u8 = 0;
-//     while (i < 5) : (i += 1) {
-//         std.debug.print("{}\n", .{i});
-//     }
-// }
-// --------------------------
+// C++入門: 02 - 制御フロー
+
+// プログラムの流れをコントロールするための構文を学びます。
+// 条件分岐 (if, else if, else) や繰り返し (for, while) は、あらゆるプログラムの基本です。
 
 int main() {
-    std::cout << "=== C++ と Zig の制御構文の比較 ===" << std::endl;
+    // 1. if, else if, else文 (条件分岐)
+    // -------------------------------------
+    int temperature = 25;
 
-    // --- 1. if-else if-else 文 ---
-    std::cout << "\n--- 1. if-else if-else 文 ---" << std::endl;
-    int score = 85;
-    if (score >= 90) {
-        std::cout << "Grade: A" << std::endl;
-    } else if (score >= 80) {
-        std::cout << "Grade: B" << std::endl;
+    std::cout << "--- if文の例 --- " << std::endl;
+    if (temperature >= 30) {
+        std::cout << "暑いですね！" << std::endl;
+    } else if (temperature >= 20) {
+        std::cout << "快適な気温です。" << std::endl;
     } else {
-        std::cout << "Grade: C or below" << std::endl;
+        std::cout << "少し肌寒いかもしれません。" << std::endl;
     }
 
-    // C++17以降: if文の初期化子
-    if (int new_score = 75; new_score >= 60) {
-        std::cout << "new_score (" << new_score << ") is passing." << std::endl;
-    } // new_score のスコープはここまで
+    // 2. switch文 (多岐分岐)
+    // -------------------------------------
+    // 特定の変数の値に応じて、処理を分岐させます。
+    // `case`の最後には`break`を忘れないようにしましょう。
+    int day_of_week = 3; // 1:月曜, 2:火曜, ...
 
-    // --- Zig との比較 ---
-    // Zigのif文は式(expression)であり、値を返すことができます。
-    // `const result = if (x > 10) "big" else "small";`
-    // C++では三項演算子 `? :` がこれに似た役割を果たします。
-    std::string size = (score > 80) ? "Large" : "Small";
-    std::cout << "Score size (ternary operator): " << size << std::endl;
-
-    // --- 2. switch 文 ---
-    std::cout << "\n--- 2. switch 文 ---" << std::endl;
-    int day = 3;
-    switch (day) {
+    std::cout << "\n--- switch文の例 --- " << std::endl;
+    switch (day_of_week) {
         case 1:
-            std::cout << "Monday";
-            break; // `break` を忘れると次のcaseに処理が続く (フォールスルー)
+            std::cout << "月曜日です。" << std::endl;
+            break;
         case 2:
-            std::cout << "Tuesday";
+            std::cout << "火曜日です。" << std::endl;
             break;
         case 3:
+            std::cout << "水曜日です。" << std::endl;
+            break;
         case 4:
-            std::cout << "Wednesday or Thursday"; // 複数のcaseをまとめる
+            std::cout << "木曜日です。" << std::endl;
+            break;
+        case 5:
+            std::cout << "金曜日です。" << std::endl;
+            break;
+        case 6:
+        case 7:
+            std::cout << "週末です！" << std::endl;
             break;
         default:
-            std::cout << "Some other day";
+            std::cout << "無効な曜日です。" << std::endl;
             break;
     }
-    std::cout << std::endl;
 
-    // C++17以降: switch文の初期化子
-    switch (int val = 42; val) {
-        case 42: std::cout << "The answer!" << std::endl; break;
-        default: std::cout << "Not the answer." << std::endl; break;
+    // 3. forループ (繰り返し)
+    // -------------------------------------
+    // 指定した回数だけ処理を繰り返します。
+    std::cout << "\n--- forループの例 --- " << std::endl;
+    for (int i = 0; i < 5; ++i) {
+        std::cout << "現在のカウント: " << i << std::endl;
     }
 
-    // --- Zig との比較 ---
-    // Zigのswitchはフォールスルーせず、各ブランチは独立しています。
-    // また、`else` ブランチによって全ての可能性を網羅することがコンパイラによって
-    // 強制されるため、`break`の書き忘れのようなバグが起こりません。
-
-    // --- 3. for ループ ---
-    std::cout << "\n--- 3. for ループ ---" << std::endl;
-    // C-style forループ
-    std::cout << "C-style for loop: ";
-    for (int i = 0; i < 5; ++i) { // `++i` (前置) が `i++` (後置) より好まれることがある
-        std::cout << i << " ";
+    // 4. 範囲ベースのforループ (Range-based for loop)
+    // -------------------------------------
+    // 配列やベクターなどのコンテナの全要素に対して処理を行います。
+    // こちらの方が簡潔で安全です。
+    std::vector<std::string> fruits = {"Apple", "Banana", "Cherry"};
+    std::cout << "\n--- 範囲ベースforループの例 --- " << std::endl;
+    for (const std::string& fruit : fruits) {
+        std::cout << "果物: " << fruit << std::endl;
     }
-    std::cout << std::endl;
 
-    // 範囲ベース forループ (C++11以降)
-    std::cout << "Range-based for loop: ";
-    std::vector<int> numbers = {10, 20, 30, 40, 50};
-    for (int num : numbers) {
-        std::cout << num << " ";
-    }
-    std::cout << std::endl;
-
-    // 参照を使った範囲ベースfor (要素の変更が可能)
-    std::cout << "Range-based for with reference: ";
-    for (int &num : numbers) {
-        num += 1; // 各要素に1を加える
-    }
-    for (const int &num : numbers) { // 読み取り専用の場合は `const&` が効率的
-        std::cout << num << " ";
-    }
-    std::cout << std::endl;
-
-    // --- Zig との比較 ---
-    // Zigのforは、C++の範囲ベースforに似ています。
-    // `for (items) |item| { ... }`
-    // C-styleの `for (int i=0; ...)` に直接対応するものはありませんが、
-    // `while`ループやイテレータで同様の処理を実現します。
-
-    // --- 4. while / do-while ループ ---
-    std::cout << "\n--- 4. while / do-while ループ ---" << std::endl;
+    // 5. whileループ (条件付き繰り返し)
+    // -------------------------------------
+    // 指定した条件がtrueである間、処理を繰り返します。
     int countdown = 3;
-    std::cout << "while loop: ";
+    std::cout << "\n--- whileループの例 --- " << std::endl;
     while (countdown > 0) {
-        std::cout << countdown-- << " ";
+        std::cout << countdown << "..." << std::endl;
+        countdown--; // カウントを減らす
     }
-    std::cout << std::endl;
+    std::cout << "発射！" << std::endl;
 
-    int input;
-    std::cout << "do-while loop (executes at least once): ";
+    // 6. do-whileループ
+    // -------------------------------------
+    // 最低1回は実行されるwhileループです。条件判定がループの後に行われます。
+    int number;
+    std::cout << "\n--- do-whileループの例 --- " << std::endl;
     do {
-        // std::cout << "Enter a number (0 to exit): ";
-        // std::cin >> input;
-        input = 0; // サンプル実行のため固定値
-        std::cout << "You entered: " << input << std::endl;
-    } while (input != 0);
-
-    // --- Zig との比較 ---
-    // ZigのwhileもC++と似ていますが、`continue`式に値を渡してループの次の
-    // イテレーションの変数を更新する、といった高度な機能も持ちます。
-    // `while (i < 10) : (i += 1) { ... }` のように、ループの最後に実行される式を書けます。
-
-    // --- 5. break と continue ---
-    std::cout << "\n--- 5. break と continue ---" << std::endl;
-    std::cout << "Loop with break/continue: ";
-    for (int i = 1; i <= 10; ++i) {
-        if (i % 2 != 0) {
-            continue; // 奇数の場合はこのイテレーションをスキップ
-        }
-        if (i > 8) {
-            break; // 8より大きくなったらループを抜ける
-        }
-        std::cout << i << " "; // 2 4 6 8 が出力される
-    }
-    std::cout << std::endl;
-
-    // --- Zig との比較 ---
-    // Zigにも `break` と `continue` は存在し、同様に機能します。
-    // 加えて、Zigでは `break` に値を渡してループ式全体の結果とすることができます。
-    // `const found_item = blk: { for (items) |item| { if (item == target) break :blk item; } else null; };`
-
-    std::cout << "\n=== 制御構文の学習完了 ===" << std::endl;
+        std::cout << "正の数を入力してください: ";
+        std::cin >> number;
+    } while (number <= 0);
+    std::cout << "入力された数: " << number << std::endl;
 
     return 0;
 }
+
+/*
+練習問題:
+1. 1から10までの整数のうち、偶数だけを表示するforループを書いてみましょう。
+   ヒント: `%` (剰余) 演算子を使います (例: `i % 2 == 0`)
+2. ユーザーに好きな果物の名前をいくつか入力してもらい、"end"と入力されたらループを終了するプログラムをwhileループを使って書いてみましょう。
+3. 1から100までの合計を計算して表示するプログラムを書いてみましょう。
+*/
