@@ -6,7 +6,9 @@
             ["cpp/main.cpp", "cpp/main.cpp"]
         ],
         "static": [
-            ["rust/setup_rust.sh", "rust/setup_rust.sh"]
+            ["rust/setup_rust.sh", "rust/setup_rust.sh"],
+            ["notes.md", "notes.md"],
+            ["ai_explanation.md", "ai_explanation.md"]
         ],
         "cmd": "(cd rust && ../rust/setup_rust.sh) && (cd go && go mod init main)",
         "submit": "go/main.go"
