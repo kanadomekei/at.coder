@@ -104,7 +104,9 @@ atcoderで解いた問題、使えそうなTips、アルゴリズム等をまと
 ✨ ??? performance
 
 ## 練習
-🔨 practice
+🔨 practice(一回目)
+
+⚒️ practice(二回目)
 
 ### 問題なしの問題
 ✅  かかった時間/推測時間 <<色>>
