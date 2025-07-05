@@ -3,7 +3,6 @@ const print = std.debug.print;
 const ArrayList = std.ArrayList;
 const Allocator = std.mem.Allocator;
 
-// 入力処理
 pub fn readLine(allocator: Allocator) ![]u8 {
     const stdin = std.io.getStdIn().reader();
     return try stdin.readUntilDelimiterAlloc(allocator, '\n', 1024);
@@ -22,11 +21,11 @@ pub fn readInt(comptime T: type) !T {
 pub fn readInts(comptime T: type, allocator: Allocator) ![]T {
     const line = try readLine(allocator);
     defer allocator.free(line);
-    
+
     var result = ArrayList(T).init(allocator);
     defer result.deinit();
-    
-    var iter = std.mem.split(u8, line, " ");
+
+    var iter = std.mem.splitSequence(u8, line, " ");
     while (iter.next()) |token| {
         const trimmed = std.mem.trim(u8, token, " \t\n\r");
         if (trimmed.len > 0) {
@@ -34,7 +33,7 @@ pub fn readInts(comptime T: type, allocator: Allocator) ![]T {
             try result.append(num);
         }
     }
-    
+
     return result.toOwnedSlice();
 }
 
@@ -42,7 +41,24 @@ pub fn readString(allocator: Allocator) ![]u8 {
     return readLine(allocator);
 }
 
-// 数学関数
+pub fn read2DInts(comptime T: type, allocator: Allocator, n: usize) ![][]T {
+    var result = ArrayList([]T).init(allocator);
+    errdefer {
+        for (result.items) |row| {
+            allocator.free(row);
+        }
+        result.deinit();
+    }
+
+    var i: usize = 0;
+    while (i < n) : (i += 1) {
+        const row = try readInts(T, allocator);
+        try result.append(row);
+    }
+
+    return result.toOwnedSlice();
+}
+
 pub fn max(comptime T: type, a: T, b: T) T {
     return if (a > b) a else b;
 }
@@ -75,7 +91,7 @@ pub fn gcd(comptime T: type, a: T, b: T) T {
     var y = b;
     while (y != 0) {
         const temp = y;
-        y = x % y;
+        y = @rem(x, y);
         x = temp;
     }
     return x;
@@ -85,7 +101,6 @@ pub fn lcm(comptime T: type, a: T, b: T) T {
     return a / gcd(T, a, b) * b;
 }
 
-// 配列操作
 pub fn reverseSlice(comptime T: type, arr: []T) void {
     var i: usize = 0;
     var j: usize = arr.len - 1;
@@ -128,30 +143,28 @@ pub fn minSlice(comptime T: type, arr: []const T) T {
     return minimum;
 }
 
-// 素数判定
 pub fn isPrime(n: i64) bool {
     if (n < 2) return false;
     if (n == 2) return true;
-    if (n % 2 == 0) return false;
-    
+    if (@rem(n, 2) == 0) return false;
+
     var i: i64 = 3;
     while (i * i <= n) {
-        if (n % i == 0) return false;
+        if (@rem(n, i) == 0) return false;
         i += 2;
     }
     return true;
 }
 
-// エラトステネスの篩
 pub fn sieveOfEratosthenes(n: usize, allocator: Allocator) ![]bool {
     var is_prime = try allocator.alloc(bool, n + 1);
     for (is_prime) |*p| {
         p.* = true;
     }
-    
+
     if (n >= 0) is_prime[0] = false;
     if (n >= 1) is_prime[1] = false;
-    
+
     var i: usize = 2;
     while (i * i <= n) {
         if (is_prime[i]) {
@@ -163,11 +176,10 @@ pub fn sieveOfEratosthenes(n: usize, allocator: Allocator) ![]bool {
         }
         i += 1;
     }
-    
+
     return is_prime;
 }
 
-// 順列・組み合わせ
 pub fn factorial(n: i64) i64 {
     if (n <= 1) return 1;
     return n * factorial(n - 1);
@@ -190,17 +202,16 @@ pub fn combination(n: i64, r: i64) i64 {
     if (r > n - r) {
         actual_r = n - r;
     }
-    
+
     var result: i64 = 1;
     var i: i64 = 0;
     while (i < actual_r) {
-        result = result * (n - i) / (i + 1);
+        result = @divExact(result * (n - i), (i + 1));
         i += 1;
     }
     return result;
 }
 
-// 文字列操作
 pub fn reverseString(s: []u8) void {
     var i: usize = 0;
     var j: usize = s.len - 1;
@@ -224,7 +235,6 @@ pub fn isPalindrome(s: []const u8) bool {
     return true;
 }
 
-// ソート
 pub fn sortSlice(comptime T: type, arr: []T) void {
     std.sort.sort(T, arr, {}, comptime std.sort.asc(T));
 }
@@ -233,11 +243,10 @@ pub fn sortSliceDesc(comptime T: type, arr: []T) void {
     std.sort.sort(T, arr, {}, comptime std.sort.desc(T));
 }
 
-// 二分探索
 pub fn binarySearch(comptime T: type, arr: []const T, target: T) ?usize {
     var left: usize = 0;
     var right: usize = arr.len;
-    
+
     while (left < right) {
         const mid = (left + right) / 2;
         if (arr[mid] == target) {
@@ -251,13 +260,12 @@ pub fn binarySearch(comptime T: type, arr: []const T, target: T) ?usize {
     return null;
 }
 
-// 出力処理
 pub fn printSlice(comptime T: type, arr: []const T) void {
     for (arr, 0..) |item, i| {
-        if (i > 0) print(" ");
+        if (i > 0) print(" ", .{});
         print("{}", .{item});
     }
-    print("\n");
+    print("\n", .{});
 }
 
 pub fn printSliceLines(comptime T: type, arr: []const T) void {
@@ -266,27 +274,45 @@ pub fn printSliceLines(comptime T: type, arr: []const T) void {
     }
 }
 
-// 使用例
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
     const allocator = gpa.allocator();
-    
-    // 入力例
+
     const n = try readInt(i32);
     const arr = try readInts(i32, allocator);
     defer allocator.free(arr);
-    
+
     print("Input: n={}, arr=", .{n});
     printSlice(i32, arr);
-    
+
     const arr_i64 = try allocator.alloc(i64, arr.len);
     defer allocator.free(arr_i64);
     for (arr, 0..) |item, i| {
         arr_i64[i] = item;
     }
-    
+
     print("Max: {}, Min: {}, Sum: {}\n", .{ maxSlice(i64, arr_i64), minSlice(i64, arr_i64), sumSlice(i64, arr_i64) });
     print("GCD of first two: {}\n", .{gcd(i64, arr_i64[0], arr_i64[1])});
     print("Is {} prime? {}\n", .{ n, isPrime(n) });
+
+    print("Permutation of 5, 2: {d}\n", .{permutation(5, 2)});
+    print("Combination of 5, 2: {d}\n", .{combination(5, 2)});
+
+    print("\n--- read2DInts example ---\n", .{});
+    print("Enter number of rows for 2D int array: ", .{});
+    const n_2d = try readInt(usize);
+    print("Enter {} lines of space-separated integers:\n", .{n_2d});
+    const data_2d = try read2DInts(i32, allocator, n_2d);
+    defer {
+        for (data_2d) |row| allocator.free(row);
+        allocator.free(data_2d);
+    }
+
+    print("2D Int Array:\n", .{});
+    var i: usize = 0;
+    while (i < data_2d.len) : (i += 1) {
+        print("Row {}: ", .{i});
+        printSlice(i32, data_2d[i]);
+    }
 }
