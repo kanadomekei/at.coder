@@ -63,7 +63,9 @@ tasks:
         elif [ -f Cargo.toml ]; then
           oj test -d ../tests -c "cargo run"
         elif [ -f main.zig ]; then
-          oj test -d ../tests -c "zig run main.zig"
+          zig build-exe main.zig -O ReleaseFast -femit-bin=./main
+          oj test -d ../tests -c "./main"
+          rm -f main main.o
         elif [ -f main.cpp ]; then
           g++ -std=c++17 -o main main.cpp
           oj test -d ../tests -c "./main"
