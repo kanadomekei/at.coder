@@ -46,6 +46,14 @@ pub fn read_chars() -> Vec<char> {
     read_line().chars().collect()
 }
 
+pub fn read_2d_ints(n: usize) -> Vec<Vec<i32>> {
+    (0..n).map(|_| read_ints()).collect()
+}
+
+pub fn read_2d_strings(n: usize) -> Vec<Vec<String>> {
+    (0..n).map(|_| read_strings()).collect()
+}
+
 // 数学関数
 pub fn gcd(a: i64, b: i64) -> i64 {
     if b == 0 {
