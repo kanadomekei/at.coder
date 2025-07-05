@@ -24,12 +24,9 @@ func main() {
 
 	sRunes := []rune(S)
 	for i := 1; i < len(sRunes); i++ {
-		if unicode.IsUpper(sRunes[i]) {
-			prevChar := sRunes[i-1]
-			if !tSet[prevChar] {
-				fmt.Println("No")
-				return
-			}
+		if unicode.IsUpper(sRunes[i]) && !tSet[sRunes[i-1]] {
+			fmt.Println("No")
+			return
 		}
 	}
 
