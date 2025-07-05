@@ -41,6 +41,14 @@ func ReadStrings() []string {
 	return strings.Fields(line)
 }
 
+func Read2DInts(n int) [][]int {
+	result := make([][]int, n)
+	for i := 0; i < n; i++ {
+		result[i] = ReadInts()
+	}
+	return result
+}
+
 // 数学関数
 func Max(a, b int) int {
 	if a > b {
@@ -231,9 +239,28 @@ func main() {
 	// 入力例
 	n := ReadInt()
 	arr := ReadInts()
-	
+
 	fmt.Printf("Input: n=%d, arr=%v\n", n, arr)
-	fmt.Printf("Max: %d, Min: %d, Sum: %d\n", MaxInts(arr), MinInts(arr), SumInts(arr))
-	fmt.Printf("GCD of first two: %d\n", Gcd(arr[0], arr[1]))
+	if len(arr) > 0 {
+		fmt.Printf("Max: %d, Min: %d, Sum: %d\n", MaxInts(arr), MinInts(arr), SumInts(arr))
+	}
+	if len(arr) >= 2 {
+		fmt.Printf("GCD of first two: %d\n", Gcd(arr[0], arr[1]))
+	}
 	fmt.Printf("Is %d prime? %v\n", n, IsPrime(n))
+
+	// Read2DInts example
+	fmt.Println("\n--- Read2DInts example ---")
+	fmt.Print("Enter number of rows for 2D int array: ")
+	n2d := ReadInt()
+	if n2d > 0 {
+		fmt.Printf("Enter %d lines of space-separated integers:\n", n2d)
+		data2d := Read2DInts(n2d)
+
+		fmt.Println("\n2D Int Array:")
+		for i, row := range data2d {
+			fmt.Printf("Row %d: ", i)
+			PrintInts(row)
+		}
+	}
 }
