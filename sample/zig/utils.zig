@@ -59,6 +59,13 @@ pub fn read2DInts(comptime T: type, allocator: Allocator, n: usize) ![][]T {
     return result.toOwnedSlice();
 }
 
+pub fn free2DSlice(comptime T: type, allocator: Allocator, slice: [][]T) void {
+    for (slice) |row| {
+        allocator.free(row);
+    }
+    allocator.free(slice);
+}
+
 pub fn max(comptime T: type, a: T, b: T) T {
     return if (a > b) a else b;
 }
@@ -304,10 +311,7 @@ pub fn main() !void {
     const n_2d = try readInt(usize);
     print("Enter {} lines of space-separated integers:\n", .{n_2d});
     const data_2d = try read2DInts(i32, allocator, n_2d);
-    defer {
-        for (data_2d) |row| allocator.free(row);
-        allocator.free(data_2d);
-    }
+    defer free2DSlice(i32, allocator, data_2d);
 
     print("2D Int Array:\n", .{});
     var i: usize = 0;
