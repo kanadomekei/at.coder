@@ -8,8 +8,9 @@ import (
 	"strings"
 )
 
+var scanner = bufio.NewScanner(os.Stdin)
+
 func ReadLine() string {
-	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 	return scanner.Text()
 }
@@ -31,5 +32,23 @@ func ReadInts() []int {
 }
 
 func main() {
-	fmt.Println("Hello, World!")
+	n := ReadInt()
+	s := make([]string, n)
+	for i := 0; i < n; i++ {
+		s[i] = ReadLine()
+	}
+
+	uniqueStrings := make(map[string]bool)
+
+	for i := 0; i < n; i++ {
+		for j := 0; j < n; j++ {
+			if i == j {
+				continue
+			}
+			concatenated := s[i] + s[j]
+			uniqueStrings[concatenated] = true
+		}
+	}
+
+	fmt.Println(len(uniqueStrings))
 }
