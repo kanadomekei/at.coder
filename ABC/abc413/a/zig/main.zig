@@ -39,7 +39,24 @@ pub fn readInts(comptime T: type, allocator: Allocator) ![]T {
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
-    // const allocator = gpa.allocator();
+    const allocator = gpa.allocator();
 
-    try std.io.getStdOut().writer().print("Hello, {s}!\n", .{"World"});
+    const data = try readInts(i32, allocator);
+
+    // const n = data[0];
+    const m = data[1];
+
+    const a = try readInts(i32, allocator);
+
+    var sum: i32 = 0;
+
+    for (a) |v| {
+        sum += v;
+    }
+
+    if (sum <= m) {
+        try std.io.getStdOut().writer().print("Yes\n", .{});
+    } else {
+        try std.io.getStdOut().writer().print("No\n", .{});
+    }
 }
