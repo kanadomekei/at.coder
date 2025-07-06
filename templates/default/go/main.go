@@ -8,8 +8,9 @@ import (
 	"strings"
 )
 
+var scanner = bufio.NewScanner(os.Stdin)
+
 func ReadLine() string {
-	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 	return scanner.Text()
 }
