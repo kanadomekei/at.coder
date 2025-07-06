@@ -8,8 +8,9 @@ import (
 	"strings"
 )
 
+var scanner = bufio.NewScanner(os.Stdin)
+
 func ReadLine() string {
-	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 	return scanner.Text()
 }
@@ -31,5 +32,19 @@ func ReadInts() []int {
 }
 
 func main() {
-	fmt.Println("Hello, World!")
+	data := ReadInts()
+	_, m := data[0], data[1]
+	a := ReadInts()
+
+	sum := 0
+
+	for _, v := range a {
+		sum += v
+	}
+
+	if sum <= m {
+		fmt.Println("Yes")
+	} else {
+		fmt.Println("No")
+	}
 }
