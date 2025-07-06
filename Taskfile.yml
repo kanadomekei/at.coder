@@ -59,15 +59,18 @@ tasks:
       - task: lint
       - |
         if [ -f main.go ]; then
-          oj test -d ../tests -c "go run main.go" >> result.txt
+          go build -o main main.go
+          oj test -d ../tests -c "./main" >> result.txt
+          rm main
         elif [ -f Cargo.toml ]; then
-          oj test -d ../tests -c "cargo run" >> result.txt
+          cargo build --release
+          oj test -d ../tests -c "./target/release/__tmp_cargo_proj" >> result.txt
         elif [ -f main.zig ]; then
           zig build-exe main.zig -O ReleaseFast -femit-bin=./main
           oj test -d ../tests -c "./main" >> result.txt
           rm -f main main.o
         elif [ -f main.cpp ]; then
-          g++ -std=c++17 -o main main.cpp
+          g++ -std=c++17 -O2 -o main main.cpp
           oj test -d ../tests -c "./main" >> result.txt
           rm main
         else
