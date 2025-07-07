@@ -1,7 +1,7 @@
 [package]
-name = "__tmp_cargo_proj"
+name = "abc412-c"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 
 [dependencies]
 itertools = "0.9.0"

@@ -1,0 +1,7 @@
+{
+  "rust-analyzer.cargo.buildScripts.enable": true,
+  "rust-analyzer.checkOnSave.command": "check",
+  "rust-analyzer.files.watcherExclude": [
+    "**/target/**"
+  ]
+}
