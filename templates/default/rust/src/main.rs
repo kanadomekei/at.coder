@@ -1,7 +1,8 @@
+#![recursion_limit = "256"]
 use proconio::input;
-use itertools::Itertools;
-use std::cmp::{max, min};
-use std::collections::{HashMap, HashSet, VecDeque};
+// use itertools::Itertools;
+// use std::cmp::{max, min};
+// use std::collections::{HashMap, HashSet, VecDeque};
 
 fn main() {
     // For recursive functions, prevent stack overflow.
@@ -17,7 +18,8 @@ fn main() {
 
 fn solve() {
     input! {
-        n, m: usize,
+        n: usize,
+        m: usize,
         a: [i64; n],
     }
 
