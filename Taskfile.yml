@@ -126,9 +126,8 @@ tasks:
                 mkdir -p "$PRACTICE_DIR/rust"
                 cd "$PRACTICE_DIR/rust"
                 cargo init --name main .
-                if [ -f "../../templates/default/rust/src/main.rs" ]; then
-                  cp "../../templates/default/rust/src/main.rs" "src/" 2>/dev/null || true
-                fi
+                # Force copy template file to overwrite cargo init's default
+                cp "../../../templates/default/rust/src/main.rs" "src/main.rs"
                 cargo add proconio@0.3.6
                 cargo add itertools@0.9.0
                 cd - > /dev/null
