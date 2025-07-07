@@ -12,6 +12,9 @@ This is an AtCoder competitive programming environment supporting Go, Rust, Zig,
 - `task new -- <contest_id>` - Create new contest directory with problem templates (run from repo root)
   - Creates `ABC/<contest_id>/` with subdirectories for each problem (a, b, c, etc.)
   - Each problem contains `go/`, `rust/`, `zig/`, and `cpp/` subdirectories with language-specific setups
+- `task practice -- <name>` - Create practice directory with language templates (run from repo root)
+  - Creates `practice/<name>/` with `go/`, `rust/`, `zig/`, and `cpp/` subdirectories
+  - Useful for practicing problems outside of AtCoder contests
 
 ### Development Workflow (run from language-specific directories)
 - `task test` - Format, lint, and test solution against sample cases
@@ -37,6 +40,12 @@ at.coder/
 │           ├── go/           # Go solution directory
 │           ├── rust/         # Rust solution directory
 │           └── zig/          # Zig solution directory
+├── practice/                 # Practice directories (created by task practice)
+│   └── <name>/
+│       ├── go/
+│       ├── rust/
+│       ├── zig/
+│       └── cpp/
 ├── templates/default/        # Language templates for new problems
 │   ├── go/
 │   ├── rust/
