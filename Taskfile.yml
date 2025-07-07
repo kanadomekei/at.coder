@@ -1,14 +1,78 @@
 version: '3'
 
+vars:
+  LANG_GO: go
+  LANG_RUST: rust
+  LANG_ZIG: zig
+  LANG_CPP: cpp
+  SUPPORTED_LANGS: "go, rust, zig, cpp"
+  DEFAULT_LANGS: "go rust zig cpp"
+
 tasks:
+
   new:
-    desc: "Create a new contest directory in ./ABC/ using acc."
+    desc: "Create a new contest directory in ./ABC/ using acc. Usage: task new -- <contest_id> [lang1 lang2 ...]"
     dir: ABC
     cmds:
-      - acc new {{.CLI_ARGS}}
+      - |
+        if [ -z "{{.CLI_ARGS}}" ]; then
+          echo "Usage: task new -- <contest_id> [{{.SUPPORTED_LANGS}}]"
+          echo "Examples:"
+          echo "  task new -- abc300           # Create all languages"
+          echo "  task new -- abc300 rust      # Create only Rust"
+          echo "  task new -- abc300 go rust   # Create Go and Rust"
+          exit 1
+        fi
+        
+        ARGS=({{.CLI_ARGS}})
+        CONTEST_ID="${ARGS[0]}"
+        
+        # Create contest directory with acc
+        acc new $CONTEST_ID
+        
+        # If specific languages are specified, remove unwanted language directories
+        if [ ${#ARGS[@]} -gt 1 ]; then
+          SPECIFIED_LANGS=("${ARGS[@]:1}")
+          
+          # Navigate to contest directory
+          cd $CONTEST_ID
+          
+          # Find all problem directories (a, b, c, d, etc.)
+          for problem_dir in */; do
+            if [ -d "$problem_dir" ]; then
+              cd "$problem_dir"
+              
+              # Remove language directories not specified
+              for lang_dir in go rust zig cpp; do
+                if [ -d "$lang_dir" ]; then
+                  # Check if this language was specified
+                  keep_lang=false
+                  for specified_lang in "${SPECIFIED_LANGS[@]}"; do
+                    if [ "$lang_dir" = "$specified_lang" ]; then
+                      keep_lang=true
+                      break
+                    fi
+                  done
+                  
+                  # Remove if not specified
+                  if [ "$keep_lang" = false ]; then
+                    rm -rf "$lang_dir"
+                    echo "Removed $problem_dir$lang_dir"
+                  else
+                    echo "Kept $problem_dir$lang_dir"
+                  fi
+                fi
+              done
+              
+              cd ..
+            fi
+          done
+          
+          cd ..
+        fi
 
   lint:
-    desc: "Lint Go or Rust code in the current directory."
+    desc: "Lint code in the current directory."
     dir: '{{.PWD}}'
     cmds:
       - |
@@ -20,12 +84,12 @@ tasks:
           cargo clippy
         elif [ -f main.zig ]; then
           echo "Linting Zig code..."
-          zig build-exe main.zig && rm main main.o
+          zig build-exe main.zig && rm -f main main.o
         elif [ -f main.cpp ]; then
           echo "Linting C++ code..."
-          g++ -Wall -Wextra -std=c++17 -o main main.cpp && rm main
+          g++ -Wall -Wextra -std=c++17 -o main main.cpp && rm -f main
         else
-          echo "No go, rust, zig, or cpp files found to lint."
+          echo "No supported language files found to lint (supported: {{.SUPPORTED_LANGS}})"
           exit 1
         fi
 
@@ -37,22 +101,26 @@ tasks:
       - task: lint
       - |
         if [ -f main.go ]; then
+          echo "Testing Go code..."
           go build -o main main.go
-          oj test -d ../tests -c "./main" >> result.txt
-          rm main
+          oj test -d ../tests -c "./main" > result.txt
+          rm -f main
         elif [ -f Cargo.toml ]; then
+          echo "Testing Rust code..."
           cargo build --release
-          oj test -d ../tests -c "./target/release/__tmp_cargo_proj" >> result.txt
+          oj test -d ../tests -c "./target/release/__tmp_cargo_proj" > result.txt
         elif [ -f main.zig ]; then
+          echo "Testing Zig code..."
           zig build-exe main.zig -O ReleaseFast -femit-bin=./main
-          oj test -d ../tests -c "./main" >> result.txt
+          oj test -d ../tests -c "./main" > result.txt
           rm -f main main.o
         elif [ -f main.cpp ]; then
+          echo "Testing C++ code..."
           g++ -std=c++17 -O2 -o main main.cpp
-          oj test -d ../tests -c "./main" >> result.txt
-          rm main
+          oj test -d ../tests -c "./main" > result.txt
+          rm -f main
         else
-          echo "No go, rust, zig, or cpp files found to test."
+          echo "No supported language files found to test (supported: {{.SUPPORTED_LANGS}})"
           exit 1
         fi
 
@@ -62,15 +130,19 @@ tasks:
     cmds:
       - |
         if [ -f main.go ]; then
+          echo "Submitting Go code..."
           acc submit main.go
         elif [ -f Cargo.toml ]; then
+          echo "Submitting Rust code..."
           acc submit
         elif [ -f main.zig ]; then
+          echo "Submitting Zig code..."
           acc submit main.zig
         elif [ -f main.cpp ]; then
+          echo "Submitting C++ code..."
           acc submit main.cpp
         else
-          echo "No go, rust, zig, or cpp files found to submit."
+          echo "No supported language files found to submit (supported: {{.SUPPORTED_LANGS}})"
           exit 1
         fi
 
@@ -79,7 +151,7 @@ tasks:
     cmds:
       - |
         if [ -z "{{.CLI_ARGS}}" ]; then
-          echo "Usage: task practice -- <practice_name> [go|rust|zig|cpp]"
+          echo "Usage: task practice -- <practice_name> [{{.SUPPORTED_LANGS}}]"
           echo "Examples:"
           echo "  task practice -- algorithms        # Create all languages"
           echo "  task practice -- dp rust           # Create only Rust"
@@ -94,15 +166,19 @@ tasks:
         
         # Copy notes.md template if it doesn't exist
         if [ ! -f "$PRACTICE_DIR/notes.md" ]; then
-          cp "templates/default/notes.md" "$PRACTICE_DIR/"
-          echo "Created $PRACTICE_DIR/notes.md"
+          if [ -f "templates/default/notes.md" ]; then
+            cp "templates/default/notes.md" "$PRACTICE_DIR/"
+            echo "Created $PRACTICE_DIR/notes.md"
+          else
+            echo "Warning: notes.md template not found, skipping"
+          fi
         else
           echo "notes.md already exists, skipping"
         fi
         
         # If no specific languages specified, create all
         if [ ${#ARGS[@]} -eq 1 ]; then
-          LANGS=("go" "rust" "zig" "cpp")
+          LANGS=({{.DEFAULT_LANGS}})
         else
           LANGS=("${ARGS[@]:1}")
         fi
@@ -126,7 +202,6 @@ tasks:
                 mkdir -p "$PRACTICE_DIR/rust"
                 cd "$PRACTICE_DIR/rust"
                 cargo init --name main .
-                # Force copy template file to overwrite cargo init's default
                 cp "../../../templates/default/rust/src/main.rs" "src/main.rs"
                 cargo add proconio@0.3.6
                 cargo add itertools@0.9.0
@@ -155,7 +230,7 @@ tasks:
               fi
               ;;
             *)
-              echo "Unknown language: $lang. Supported: go, rust, zig, cpp"
+              echo "Unknown language: $lang. Supported: {{.SUPPORTED_LANGS}}"
               ;;
           esac
         done
@@ -163,7 +238,7 @@ tasks:
         echo "Practice directory created at $PRACTICE_DIR"
 
   fmt:
-    desc: "Format Go or Rust code in the current directory."
+    desc: "Format code in the current directory."
     dir: '{{.PWD}}'
     cmds:
       - |
@@ -180,6 +255,6 @@ tasks:
           echo "Formatting C++ code..."
           clang-format -i main.cpp
         else
-          echo "No go, rust, zig, or cpp files found to format."
+          echo "No supported language files found to format (supported: {{.SUPPORTED_LANGS}})"
           exit 1
         fi
