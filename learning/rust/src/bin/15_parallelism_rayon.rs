@@ -7,56 +7,125 @@ use std::time::Instant;
 /// `rayon`クレートを使って、巨大なデータセットの処理を簡単に並列化する例です。
 /// CPUのマルチコア性能を最大限に引き出し、処理を高速化することを目的とします。
 fn main() {
-    let mut numbers: Vec<i64> = (0..20_000_000).collect();
+    println!("=== 逐次処理 vs 並列処理 比較デモ ===");
+    println!("CPUコア数: {}", rayon::current_num_threads());
+    
+    // 1. 基本的な変換処理の比較
+    basic_transformation_comparison();
+    
+    // 2. 合計計算の比較
+    sum_calculation_comparison();
+    
+    // 3. 複雑な計算の比較
+    complex_calculation_comparison();
+}
 
-    // --- 逐次処理 (Sequential processing) ---
-    println!("--- 1. 逐次処理を開始します ---");
+/// 基本的な変換処理（各要素を2倍にする）の逐次処理と並列処理の比較
+fn basic_transformation_comparison() {
+    println!("\n--- 1. 基本的な変換処理（各要素を2倍）の比較 ---");
+    let size = 50_000_000;
+    
+    // 逐次処理
+    let mut numbers_seq: Vec<i64> = (0..size).collect();
     let start_seq = Instant::now();
-
-    // 通常のイテレータを使って、各要素を2倍にする
-    numbers.iter_mut().for_each(|n| *n *= 2);
-
+    numbers_seq.iter_mut().for_each(|n| *n *= 2);
     let duration_seq = start_seq.elapsed();
-    println!("逐次処理にかかった時間: {:?}", duration_seq);
-    // numbersの値をリセット
-    numbers = (0..20_000_000).collect();
-
-
-    // --- 並列処理 (Parallel processing) ---
-    println!("\n--- 2. Rayonを使った並列処理を開始します ---");
+    
+    // 並列処理
+    let mut numbers_par: Vec<i64> = (0..size).collect();
     let start_par = Instant::now();
-
-    // `.iter_mut()` を `.par_iter_mut()` に変えるだけ！
-    // これだけで、Rayonが裏側で自動的にデータを分割し、
-    // 複数のスレッドに処理を割り当て、CPUコアをフル活用してくれます。
-    numbers.par_iter_mut().for_each(|n| *n *= 2);
-
+    numbers_par.par_iter_mut().for_each(|n| *n *= 2);
     let duration_par = start_par.elapsed();
-    println!("並列処理にかかった時間: {:?}", duration_par);
-
-
-    // --- 結果の比較 ---
-    println!("\n--- 結果 ---");
+    
+    println!("  要素数: {}", size);
+    println!("  逐次処理時間: {:?}", duration_seq);
+    println!("  並列処理時間: {:?}", duration_par);
+    
     if duration_par < duration_seq {
-        let improvement = (duration_seq.as_micros() as f64) / (duration_par.as_micros() as f64);
-        println!("並列処理は逐次処理より {:.2} 倍高速でした。", improvement);
+        let improvement = duration_seq.as_micros() as f64 / duration_par.as_micros() as f64;
+        println!("  🚀 並列処理は逐次処理より {:.2} 倍高速！", improvement);
     } else {
-        println!("並列処理は逐次処理より高速ではありませんでした。");
+        println!("  ⚠️ 並列処理は逐次処理より高速ではありませんでした");
     }
+    
+    // 結果の検証
+    let first_10_seq: Vec<i64> = numbers_seq.iter().take(10).copied().collect();
+    let first_10_par: Vec<i64> = numbers_par.iter().take(10).copied().collect();
+    println!("  結果確認 - 逐次処理の最初の10個: {:?}", first_10_seq);
+    println!("  結果確認 - 並列処理の最初の10個: {:?}", first_10_par);
+    println!("  結果の一致: {}", first_10_seq == first_10_par);
+}
 
-    // --- `map-reduce` パターンの並列処理 ---
-    // Rayonは、`sum()`や`max()`などの集計処理も簡単に並列化できます。
-    println!("\n--- 3. 並列での合計計算 (Map-Reduce) ---");
-    let huge_vector: Vec<i64> = (1..=1_000_000_000).collect();
+/// 合計計算の逐次処理と並列処理の比較
+fn sum_calculation_comparison() {
+    println!("\n--- 2. 合計計算の比較 ---");
+    let size = 100_000_000;
+    let numbers: Vec<i64> = (1..=size).collect();
+    
+    // 逐次処理
+    let start_seq = Instant::now();
+    let sum_seq: i64 = numbers.iter().sum();
+    let duration_seq = start_seq.elapsed();
+    
+    // 並列処理
+    let start_par = Instant::now();
+    let sum_par: i64 = numbers.par_iter().sum();
+    let duration_par = start_par.elapsed();
+    
+    println!("  要素数: {}", size);
+    println!("  逐次処理時間: {:?}", duration_seq);
+    println!("  並列処理時間: {:?}", duration_par);
+    
+    if duration_par < duration_seq {
+        let improvement = duration_seq.as_micros() as f64 / duration_par.as_micros() as f64;
+        println!("  🚀 並列処理は逐次処理より {:.2} 倍高速！", improvement);
+    } else {
+        println!("  ⚠️ 並列処理は逐次処理より高速ではありませんでした");
+    }
+    
+    println!("  結果の一致: {}", sum_seq == sum_par);
+    println!("  合計値: {}", sum_seq);
+}
 
-    let start_sum = Instant::now();
-
-    // `.par_iter()` を使って、巨大なベクターの合計値を並列に計算する
-    let sum: i64 = huge_vector.par_iter().sum();
-    // Rayonが内部でデータを複数のチャンクに分割 -> 各チャンクの合計を並列に計算 ->
-    // 最後に各チャンクの結果を合計する、という処理を自動で行います。
-
-    let duration_sum = start_sum.elapsed();
-    println!("1から10億までの合計: {}", sum);
-    println!("並列での合計計算にかかった時間: {:?}", duration_sum);
+/// 複雑な計算（平方根の計算）の逐次処理と並列処理の比較
+fn complex_calculation_comparison() {
+    println!("\n--- 3. 複雑な計算（平方根）の比較 ---");
+    let size = 20_000_000;
+    let numbers: Vec<f64> = (1..=size).map(|x| x as f64).collect();
+    
+    // 逐次処理
+    let start_seq = Instant::now();
+    let sqrt_seq: Vec<f64> = numbers.iter().map(|x| x.sqrt()).collect();
+    let duration_seq = start_seq.elapsed();
+    
+    // 並列処理
+    let start_par = Instant::now();
+    let sqrt_par: Vec<f64> = numbers.par_iter().map(|x| x.sqrt()).collect();
+    let duration_par = start_par.elapsed();
+    
+    println!("  要素数: {}", size);
+    println!("  逐次処理時間: {:?}", duration_seq);
+    println!("  並列処理時間: {:?}", duration_par);
+    
+    if duration_par < duration_seq {
+        let improvement = duration_seq.as_micros() as f64 / duration_par.as_micros() as f64;
+        println!("  🚀 並列処理は逐次処理より {:.2} 倍高速！", improvement);
+    } else {
+        println!("  ⚠️ 並列処理は逐次処理より高速ではありませんでした");
+    }
+    
+    // 結果の検証（最初の5個の要素）
+    let first_5_seq: Vec<f64> = sqrt_seq.iter().take(5).copied().collect();
+    let first_5_par: Vec<f64> = sqrt_par.iter().take(5).copied().collect();
+    println!("  結果確認 - 逐次処理の最初の5個: {:?}", first_5_seq);
+    println!("  結果確認 - 並列処理の最初の5個: {:?}", first_5_par);
+    
+    println!("\n=== まとめ ===");
+    println!("💡 並列処理のメリット:");
+    println!("   - CPUのマルチコアを活用して処理を高速化");
+    println!("   - .iter() を .par_iter() に変えるだけで簡単に並列化");
+    println!("   - 大きなデータセットや計算負荷の高い処理で効果的");
+    println!("⚠️ 注意点:");
+    println!("   - 小さなデータセットでは並列化のオーバーヘッドで遅くなる場合も");
+    println!("   - スレッド間の同期コストが発生する");
 } 
