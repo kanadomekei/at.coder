@@ -7,28 +7,6 @@ tasks:
     cmds:
       - acc new {{.CLI_ARGS}}
 
-  fmt:
-    desc: "Format Go or Rust code in the current directory."
-    dir: '{{.PWD}}'
-    cmds:
-      - |
-        if [ -f main.go ]; then
-          echo "Formatting Go code..."
-          gofmt -w .
-        elif [ -f Cargo.toml ]; then
-          echo "Formatting Rust code..."
-          cargo fmt
-        elif [ -f main.zig ]; then
-          echo "Formatting Zig code..."
-          zig fmt main.zig
-        elif [ -f main.cpp ]; then
-          echo "Formatting C++ code..."
-          clang-format -i main.cpp
-        else
-          echo "No go, rust, zig, or cpp files found to format."
-          exit 1
-        fi
-
   lint:
     desc: "Lint Go or Rust code in the current directory."
     dir: '{{.PWD}}'
@@ -93,5 +71,116 @@ tasks:
           acc submit main.cpp
         else
           echo "No go, rust, zig, or cpp files found to submit."
+          exit 1
+        fi
+
+  practice:
+    desc: "Create a practice directory with language templates. Usage: task practice -- <name> [lang1 lang2 ...]"
+    cmds:
+      - |
+        if [ -z "{{.CLI_ARGS}}" ]; then
+          echo "Usage: task practice -- <practice_name> [go|rust|zig|cpp]"
+          echo "Examples:"
+          echo "  task practice -- algorithms        # Create all languages"
+          echo "  task practice -- dp rust           # Create only Rust"
+          echo "  task practice -- graph go rust     # Create Go and Rust"
+          exit 1
+        fi
+        
+        ARGS=({{.CLI_ARGS}})
+        NAME="${ARGS[0]}"
+        PRACTICE_DIR="practice/$NAME"
+        mkdir -p "$PRACTICE_DIR"
+        
+        # Copy notes.md template if it doesn't exist
+        if [ ! -f "$PRACTICE_DIR/notes.md" ]; then
+          cp "templates/default/notes.md" "$PRACTICE_DIR/"
+          echo "Created $PRACTICE_DIR/notes.md"
+        else
+          echo "notes.md already exists, skipping"
+        fi
+        
+        # If no specific languages specified, create all
+        if [ ${#ARGS[@]} -eq 1 ]; then
+          LANGS=("go" "rust" "zig" "cpp")
+        else
+          LANGS=("${ARGS[@]:1}")
+        fi
+        
+        for lang in "${LANGS[@]}"; do
+          case $lang in
+            go)
+              if [ ! -d "$PRACTICE_DIR/go" ]; then
+                mkdir -p "$PRACTICE_DIR/go"
+                cp "templates/default/go/main.go" "$PRACTICE_DIR/go/"
+                cd "$PRACTICE_DIR/go"
+                go mod init main
+                cd - > /dev/null
+                echo "Created $PRACTICE_DIR/go"
+              else
+                echo "$PRACTICE_DIR/go already exists, skipping"
+              fi
+              ;;
+            rust)
+              if [ ! -d "$PRACTICE_DIR/rust" ]; then
+                mkdir -p "$PRACTICE_DIR/rust"
+                cd "$PRACTICE_DIR/rust"
+                cargo init --name main .
+                if [ -f "../../templates/default/rust/src/main.rs" ]; then
+                  cp "../../templates/default/rust/src/main.rs" "src/" 2>/dev/null || true
+                fi
+                cargo add proconio@0.3.6
+                cargo add itertools@0.9.0
+                cd - > /dev/null
+                echo "Created $PRACTICE_DIR/rust"
+              else
+                echo "$PRACTICE_DIR/rust already exists, skipping"
+              fi
+              ;;
+            zig)
+              if [ ! -d "$PRACTICE_DIR/zig" ]; then
+                mkdir -p "$PRACTICE_DIR/zig"
+                cp "templates/default/zig/main.zig" "$PRACTICE_DIR/zig/"
+                echo "Created $PRACTICE_DIR/zig"
+              else
+                echo "$PRACTICE_DIR/zig already exists, skipping"
+              fi
+              ;;
+            cpp)
+              if [ ! -d "$PRACTICE_DIR/cpp" ]; then
+                mkdir -p "$PRACTICE_DIR/cpp"
+                cp "templates/default/cpp/main.cpp" "$PRACTICE_DIR/cpp/"
+                echo "Created $PRACTICE_DIR/cpp"
+              else
+                echo "$PRACTICE_DIR/cpp already exists, skipping"
+              fi
+              ;;
+            *)
+              echo "Unknown language: $lang. Supported: go, rust, zig, cpp"
+              ;;
+          esac
+        done
+        
+        echo "Practice directory created at $PRACTICE_DIR"
+
+  fmt:
+    desc: "Format Go or Rust code in the current directory."
+    dir: '{{.PWD}}'
+    cmds:
+      - |
+        if [ -f main.go ]; then
+          echo "Formatting Go code..."
+          gofmt -w .
+        elif [ -f Cargo.toml ]; then
+          echo "Formatting Rust code..."
+          cargo fmt
+        elif [ -f main.zig ]; then
+          echo "Formatting Zig code..."
+          zig fmt main.zig
+        elif [ -f main.cpp ]; then
+          echo "Formatting C++ code..."
+          clang-format -i main.cpp
+        else
+          echo "No go, rust, zig, or cpp files found to format."
           exit 1
         fi
