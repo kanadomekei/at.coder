@@ -42,11 +42,13 @@ pub fn main() !void {
     const allocator = gpa.allocator();
 
     const data = try readInts(i32, allocator);
+    defer allocator.free(data);
 
     // const n = data[0];
     const m = data[1];
 
     const a = try readInts(i32, allocator);
+    defer allocator.free(a);
 
     var sum: i32 = 0;
 
