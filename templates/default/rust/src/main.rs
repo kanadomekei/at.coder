@@ -1,6 +1,37 @@
 use proconio::input;
+use itertools::Itertools;
+use std::cmp::{max, min};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 fn main() {
-    println!("Hello, World!");
-    println!("Hello, World!");
+    // For recursive functions, prevent stack overflow.
+    std::thread::Builder::new()
+        .stack_size(128 * 1024 * 1024)
+        .spawn(|| {
+            solve();
+        })
+        .unwrap()
+        .join()
+        .unwrap();
+}
+
+fn solve() {
+    input! {
+        n, m: usize,
+        a: [i64; n],
+    }
+
+    // Calculate the answer
+    let ans = 0;
+
+    println!("{}", ans);
+}
+
+// Macro for debugging
+#[macro_export]
+macro_rules! dbg {
+    ($($a:expr),* $(,)?) => {
+        #[cfg(debug_assertions)]
+        eprintln!(concat!($("| ", stringify!($a), " = {:?} "),*, "|"), $(&$a),*);
+    };
 }
