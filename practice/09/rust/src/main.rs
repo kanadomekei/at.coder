@@ -20,13 +20,17 @@ fn solve() {
     input! {
         a: usize,
         b: usize,
+        c: usize,
+        x: usize,
     }
 
-    if a * b % 2 == 0 {
-        println!("Even");
-    } else {
-        println!("Odd");
-    }
+    let ans = (0..=a)
+        .flat_map(|i| {
+            (0..=b).flat_map(move |j| (0..=c).filter(move |k| i * 500 + j * 100 + k * 50 == x))
+        })
+        .count();
+
+    println!("{}", ans);
 }
 
 // Macro for debugging

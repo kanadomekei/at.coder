@@ -18,15 +18,13 @@ fn main() {
 
 fn solve() {
     input! {
+        k: usize,
         a: usize,
         b: usize,
     }
 
-    if a * b % 2 == 0 {
-        println!("Even");
-    } else {
-        println!("Odd");
-    }
+    let ans = (a..=b).any(|x| x % k == 0);
+    println!("{}", if ans { "OK" } else { "NG" });
 }
 
 // Macro for debugging

@@ -1,6 +1,6 @@
 #![recursion_limit = "256"]
+use itertools::Itertools;
 use proconio::input;
-// use itertools::Itertools;
 // use std::cmp::{max, min};
 // use std::collections::{HashMap, HashSet, VecDeque};
 
@@ -18,15 +18,16 @@ fn main() {
 
 fn solve() {
     input! {
-        a: usize,
-        b: usize,
+        n: usize,
+        a: [i64; n],
     }
 
-    if a * b % 2 == 0 {
-        println!("Even");
-    } else {
-        println!("Odd");
-    }
+    // Calculate the answer
+    let alice = a.iter().sorted().rev().step_by(2).sum::<i64>();
+    let bob = a.iter().sorted().rev().skip(1).step_by(2).sum::<i64>();
+
+    // dbg!(&a.iter().sorted().rev().step_by(2), &a[1..].iter().sorted().rev().step_by(2));
+    println!("{}", alice - bob);
 }
 
 // Macro for debugging

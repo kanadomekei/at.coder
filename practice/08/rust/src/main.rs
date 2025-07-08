@@ -18,14 +18,28 @@ fn main() {
 
 fn solve() {
     input! {
-        a: usize,
-        b: usize,
+        s: String,
     }
 
-    if a * b % 2 == 0 {
-        println!("Even");
+    let cond1 = s.starts_with('A');
+
+    let cond2 = if s.len() >= 3 {
+        s.chars()
+            .skip(2)
+            .take(s.len() - 3)
+            .filter(|&c| c == 'C')
+            .count()
+            == 1
     } else {
-        println!("Odd");
+        false
+    };
+
+    let cond3 = s.chars().filter(|c| c.is_uppercase()).count() == 2;
+
+    if cond1 && cond2 && cond3 {
+        println!("AC");
+    } else {
+        println!("WA");
     }
 }
 

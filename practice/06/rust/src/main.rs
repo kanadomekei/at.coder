@@ -18,15 +18,13 @@ fn main() {
 
 fn solve() {
     input! {
-        a: usize,
-        b: usize,
+        n: usize,
+        a: [i64; n],
     }
 
-    if a * b % 2 == 0 {
-        println!("Even");
-    } else {
-        println!("Odd");
-    }
+    let ans = a.iter().map(|&x| x.trailing_zeros()).min().unwrap_or(0);
+
+    println!("{}", ans);
 }
 
 // Macro for debugging
