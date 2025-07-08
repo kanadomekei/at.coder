@@ -564,6 +564,17 @@ where
         .collect()
 }
 
+/// `saturating_sub`は、引き算の結果が型の最小値を下回る場合に、
+/// パニックする代わりに最小値（`usize`の場合は0）に丸めます（飽和させます）。
+pub fn saturating_sub_example(a: usize, b: usize) -> usize {
+    a.saturating_sub(b)
+}
+
+/// イテレータチェーンで`saturating_sub`を使用して安全な範囲を作成します。
+pub fn safe_range_with_saturating_sub(n: usize, i: usize) -> Vec<usize> {
+    (0..=n.saturating_sub(i)).collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -622,5 +633,23 @@ mod tests {
     fn test_generate_fibonacci() {
         let result = generate_fibonacci(10);
         assert_eq!(result, vec![0, 1, 1, 2, 3, 5, 8, 13, 21, 34]);
+    }
+
+    #[test]
+    fn test_saturating_sub_example() {
+        assert_eq!(saturating_sub_example(10, 3), 7);
+        assert_eq!(saturating_sub_example(10, 10), 0);
+        assert_eq!(saturating_sub_example(10, 15), 0); // Underflow is saturated to 0
+    }
+
+    #[test]
+    fn test_safe_range_with_saturating_sub() {
+        // n=5, i=2 => 0..=(5-2) => 0..=3 => [0, 1, 2, 3]
+        assert_eq!(safe_range_with_saturating_sub(5, 2), vec![0, 1, 2, 3]);
+        // n=5, i=5 => 0..=(5-5) => 0..=0 => [0]
+        assert_eq!(safe_range_with_saturating_sub(5, 5), vec![0]);
+        // n=5, i=7 => 0..=(5.saturating_sub(7)) => 0..=0 => [0]
+        // This would panic with regular subtraction.
+        assert_eq!(safe_range_with_saturating_sub(5, 7), vec![0]);
     }
 }
