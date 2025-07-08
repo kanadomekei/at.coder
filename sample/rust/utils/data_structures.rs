@@ -3,45 +3,76 @@ use std::cmp::Reverse;
 
 // HashMap の基本操作
 pub fn hashmap_examples() {
-    // 新しいHashMapを作成
-    let mut map: HashMap<String, i32> = HashMap::new();
-    
-    // 値を挿入
+    let mut map = hashmap_create();
+    hashmap_insert(&mut map);
+    hashmap_get(&map);
+    hashmap_contains(&map);
+    hashmap_update(&mut map);
+    hashmap_entry_api(&mut map);
+    hashmap_remove(&mut map);
+    hashmap_iterate(&map);
+    hashmap_iterate_keys(&map);
+    hashmap_iterate_values(&map);
+}
+
+// HashMapを作成
+pub fn hashmap_create() -> HashMap<String, i32> {
+    HashMap::new()
+}
+
+// HashMap に値を挿入
+pub fn hashmap_insert(map: &mut HashMap<String, i32>) {
     map.insert("apple".to_string(), 100);
     map.insert("banana".to_string(), 200);
     map.insert("cherry".to_string(), 300);
-    
-    // 値を取得
+}
+
+// HashMap から値を取得
+pub fn hashmap_get(map: &HashMap<String, i32>) {
     if let Some(value) = map.get("apple") {
         println!("apple: {}", value);
     }
-    
-    // キーの存在確認
+}
+
+// HashMap でキーの存在確認
+pub fn hashmap_contains(map: &HashMap<String, i32>) {
     if map.contains_key("apple") {
         println!("apple exists");
     }
-    
-    // 値を更新
-    map.insert("apple".to_string(), 150); // 上書き
-    
-    // entry APIを使った更新
+}
+
+// HashMap の値を更新
+pub fn hashmap_update(map: &mut HashMap<String, i32>) {
+    map.insert("apple".to_string(), 150);
+}
+
+// HashMap の entry API を使った更新
+pub fn hashmap_entry_api(map: &mut HashMap<String, i32>) {
     map.entry("orange".to_string()).or_insert(250);
     *map.entry("apple".to_string()).or_insert(0) += 50;
-    
-    // 削除
+}
+
+// HashMap から要素を削除
+pub fn hashmap_remove(map: &mut HashMap<String, i32>) {
     map.remove("banana");
-    
-    // 全要素を反復処理
-    for (key, value) in &map {
+}
+
+// HashMap の全要素を反復処理
+pub fn hashmap_iterate(map: &HashMap<String, i32>) {
+    for (key, value) in map {
         println!("{}: {}", key, value);
     }
-    
-    // キーのみを反復処理
+}
+
+// HashMap のキーのみを反復処理
+pub fn hashmap_iterate_keys(map: &HashMap<String, i32>) {
     for key in map.keys() {
         println!("key: {}", key);
     }
-    
-    // 値のみを反復処理
+}
+
+// HashMap の値のみを反復処理
+pub fn hashmap_iterate_values(map: &HashMap<String, i32>) {
     for value in map.values() {
         println!("value: {}", value);
     }
@@ -49,25 +80,41 @@ pub fn hashmap_examples() {
 
 // HashMap の高度な操作
 pub fn hashmap_advanced() {
-    let mut counter: HashMap<char, i32> = HashMap::new();
-    let text = "hello world";
-    
-    // 文字の頻度をカウント
+    let mut counter = hashmap_char_counter();
+    hashmap_frequency_count(&mut counter, "hello world");
+    hashmap_find_max_entry(&counter);
+    hashmap_retain_condition(&mut counter);
+    hashmap_merge(&mut counter);
+}
+
+// 文字カウンターの作成
+pub fn hashmap_char_counter() -> HashMap<char, i32> {
+    HashMap::new()
+}
+
+// 文字の頻度をカウント
+pub fn hashmap_frequency_count(counter: &mut HashMap<char, i32>, text: &str) {
     for ch in text.chars() {
         if ch != ' ' {
             *counter.entry(ch).or_insert(0) += 1;
         }
     }
-    
-    // 最大値を持つキーを取得
+}
+
+// 最大値を持つエントリを取得
+pub fn hashmap_find_max_entry(counter: &HashMap<char, i32>) {
     if let Some((max_char, max_count)) = counter.iter().max_by_key(|&(_, count)| count) {
         println!("Most frequent char: '{}' appears {} times", max_char, max_count);
     }
-    
-    // 条件に基づいて要素を削除
+}
+
+// 条件に基づいて要素を保持
+pub fn hashmap_retain_condition(counter: &mut HashMap<char, i32>) {
     counter.retain(|&_key, &mut value| value > 1);
-    
-    // 別のHashMapとマージ
+}
+
+// 別のHashMapとマージ
+pub fn hashmap_merge(counter: &mut HashMap<char, i32>) {
     let mut other_map = HashMap::new();
     other_map.insert('x', 5);
     other_map.insert('y', 10);
@@ -79,46 +126,78 @@ pub fn hashmap_advanced() {
 
 // HashSet の基本操作
 pub fn hashset_examples() {
-    // 新しいHashSetを作成
-    let mut set: HashSet<i32> = HashSet::new();
-    
-    // 値を挿入
+    let mut set = hashset_create();
+    hashset_insert(&mut set);
+    hashset_contains(&set);
+    hashset_remove(&mut set);
+    hashset_iterate(&set);
+    hashset_set_operations();
+}
+
+// HashSetを作成
+pub fn hashset_create() -> HashSet<i32> {
+    HashSet::new()
+}
+
+// HashSetに値を挿入
+pub fn hashset_insert(set: &mut HashSet<i32>) {
     set.insert(1);
     set.insert(2);
     set.insert(3);
     set.insert(2); // 重複は無視される
-    
-    // 値の存在確認
+}
+
+// HashSetで値の存在確認
+pub fn hashset_contains(set: &HashSet<i32>) {
     if set.contains(&2) {
         println!("2 exists in set");
     }
-    
-    // 削除
+}
+
+// HashSetから値を削除
+pub fn hashset_remove(set: &mut HashSet<i32>) {
     set.remove(&2);
-    
-    // 全要素を反復処理
-    for value in &set {
+}
+
+// HashSetの全要素を反復処理
+pub fn hashset_iterate(set: &HashSet<i32>) {
+    for value in set {
         println!("value: {}", value);
     }
-    
-    // 集合演算
+}
+
+// HashSetの集合演算
+pub fn hashset_set_operations() {
     let set1: HashSet<i32> = [1, 2, 3, 4].iter().cloned().collect();
     let set2: HashSet<i32> = [3, 4, 5, 6].iter().cloned().collect();
     
-    // 和集合
-    let union: HashSet<i32> = set1.union(&set2).cloned().collect();
+    hashset_union(&set1, &set2);
+    hashset_intersection(&set1, &set2);
+    hashset_difference(&set1, &set2);
+    hashset_symmetric_difference(&set1, &set2);
+}
+
+// 和集合
+pub fn hashset_union(set1: &HashSet<i32>, set2: &HashSet<i32>) {
+    let union: HashSet<i32> = set1.union(set2).cloned().collect();
     println!("Union: {:?}", union);
-    
-    // 積集合
-    let intersection: HashSet<i32> = set1.intersection(&set2).cloned().collect();
+}
+
+// 積集合
+pub fn hashset_intersection(set1: &HashSet<i32>, set2: &HashSet<i32>) {
+    let intersection: HashSet<i32> = set1.intersection(set2).cloned().collect();
     println!("Intersection: {:?}", intersection);
-    
-    // 差集合
-    let difference: HashSet<i32> = set1.difference(&set2).cloned().collect();
+}
+
+// 差集合
+pub fn hashset_difference(set1: &HashSet<i32>, set2: &HashSet<i32>) {
+    let difference: HashSet<i32> = set1.difference(set2).cloned().collect();
     println!("Difference: {:?}", difference);
-    
-    // 対称差集合
-    let symmetric_difference: HashSet<i32> = set1.symmetric_difference(&set2).cloned().collect();
+}
+
+// 対称差集合
+pub fn hashset_symmetric_difference(set1: &HashSet<i32>, set2: &HashSet<i32>) {
+    let symmetric_difference: HashSet<i32> = set1.symmetric_difference(set2).cloned().collect();
     println!("Symmetric difference: {:?}", symmetric_difference);
 }
 
@@ -126,15 +205,26 @@ pub fn hashset_examples() {
 pub fn hashset_advanced() {
     let numbers = vec![1, 2, 3, 4, 5, 2, 3, 6, 7, 8, 1];
     
-    // 重複を削除
+    let unique_numbers = hashset_remove_duplicates(&numbers);
+    hashset_check_duplicates(&numbers, &unique_numbers);
+    hashset_filter_even(&unique_numbers);
+}
+
+// 重複を削除
+pub fn hashset_remove_duplicates(numbers: &[i32]) -> HashSet<i32> {
     let unique_numbers: HashSet<i32> = numbers.iter().cloned().collect();
     println!("Unique numbers: {:?}", unique_numbers);
-    
-    // 重複があるかチェック
+    unique_numbers
+}
+
+// 重複があるかチェック
+pub fn hashset_check_duplicates(numbers: &[i32], unique_numbers: &HashSet<i32>) {
     let has_duplicates = numbers.len() != unique_numbers.len();
     println!("Has duplicates: {}", has_duplicates);
-    
-    // 条件に基づいて要素を削除
+}
+
+// 条件に基づいて要素をフィルタリング
+pub fn hashset_filter_even(unique_numbers: &HashSet<i32>) {
     let mut filtered_set = unique_numbers.clone();
     filtered_set.retain(|&x| x % 2 == 0);
     println!("Even numbers: {:?}", filtered_set);
@@ -142,52 +232,81 @@ pub fn hashset_advanced() {
 
 // Tuple の基本操作
 pub fn tuple_examples() {
-    // 基本的なタプル
+    tuple_basic();
+    tuple_destructure();
+    tuple_mixed_types();
+    tuple_nested();
+    tuple_single_element();
+}
+
+// 基本的なタプル
+pub fn tuple_basic() {
     let point = (3, 4);
     println!("Point: ({}, {})", point.0, point.1);
-    
-    // 分解
+}
+
+// タプルの分解
+pub fn tuple_destructure() {
+    let point = (3, 4);
     let (x, y) = point;
     println!("x: {}, y: {}", x, y);
-    
-    // 異なる型のタプル
+}
+
+// 異なる型のタプル
+pub fn tuple_mixed_types() {
     let person = ("Alice", 30, true);
     let (name, age, is_student) = person;
     println!("Name: {}, Age: {}, Student: {}", name, age, is_student);
-    
-    // ネストしたタプル
+}
+
+// ネストしたタプル
+pub fn tuple_nested() {
     let nested = ((1, 2), (3, 4));
     println!("Nested: {:?}", nested);
-    
-    // 単一要素のタプル（カンマが必要）
+}
+
+// 単一要素のタプル
+pub fn tuple_single_element() {
     let single = (42,);
     println!("Single element tuple: {:?}", single);
 }
 
 // Tuple の高度な操作
 pub fn tuple_advanced() {
-    // 座標計算
+    tuple_distance_calculation();
+    tuple_max_point();
+    tuple_sorting();
+    tuple_multi_key_sorting();
+}
+
+// 座標間の距離計算
+pub fn tuple_distance_calculation() {
     let point1 = (3.0, 4.0);
     let point2 = (6.0, 8.0);
     
-    // 距離を計算
     let distance = ((point2.0 - point1.0).powi(2) + (point2.1 - point1.1).powi(2)).sqrt();
     println!("Distance: {}", distance);
-    
-    // タプルの配列
+}
+
+// 合計が最大の点を取得
+pub fn tuple_max_point() {
     let points = [(0, 0), (1, 1), (2, 2), (3, 3)];
     
-    // 合計が最大の点を取得
     if let Some(max_point) = points.iter().max_by_key(|&&(x, y)| x + y) {
         println!("Max point: {:?}", max_point);
     }
-    
-    // タプルをソート
+}
+
+// タプルを合計でソート
+pub fn tuple_sorting() {
     let mut points_vec = vec![(3, 1), (1, 3), (2, 2), (1, 1)];
-    points_vec.sort_by_key(|&(x, y)| x + y); // 合計でソート
+    points_vec.sort_by_key(|&(x, y)| x + y);
     println!("Sorted points: {:?}", points_vec);
-    
-    // 複数キーでソート
+}
+
+// タプルを複数キーでソート
+pub fn tuple_multi_key_sorting() {
+    let mut points_vec = vec![(3, 1), (1, 3), (2, 2), (1, 1)];
     points_vec.sort_by(|&(x1, y1), &(x2, y2)| {
         x1.cmp(&x2).then(y1.cmp(&y2))
     });
@@ -262,39 +381,65 @@ pub fn vec_to_tuple<T: Clone>(vec: Vec<T>) -> Option<(T, T)> {
 
 // VecDeque（両端キュー）の基本操作
 pub fn vecdeque_examples() {
-    // 新しいVecDequeを作成
-    let mut deque: VecDeque<i32> = VecDeque::new();
-    
-    // 後端に追加
+    let mut deque = vecdeque_create();
+    vecdeque_push_back(&mut deque);
+    vecdeque_push_front(&mut deque);
+    vecdeque_display(&deque);
+    vecdeque_pop_front(&mut deque);
+    vecdeque_pop_back(&mut deque);
+    vecdeque_front_back_ref(&deque);
+    vecdeque_index_access(&deque);
+}
+
+// VecDequeを作成
+pub fn vecdeque_create() -> VecDeque<i32> {
+    VecDeque::new()
+}
+
+// VecDequeの後端に追加
+pub fn vecdeque_push_back(deque: &mut VecDeque<i32>) {
     deque.push_back(1);
     deque.push_back(2);
     deque.push_back(3);
-    
-    // 前端に追加
+}
+
+// VecDequeの前端に追加
+pub fn vecdeque_push_front(deque: &mut VecDeque<i32>) {
     deque.push_front(0);
     deque.push_front(-1);
-    
-    println!("Deque: {:?}", deque); // [-1, 0, 1, 2, 3]
-    
-    // 前端から取得・削除
+}
+
+// VecDequeを表示
+pub fn vecdeque_display(deque: &VecDeque<i32>) {
+    println!("Deque: {:?}", deque);
+}
+
+// VecDequeの前端から取得・削除
+pub fn vecdeque_pop_front(deque: &mut VecDeque<i32>) {
     if let Some(front) = deque.pop_front() {
         println!("Front: {}", front);
     }
-    
-    // 後端から取得・削除
+}
+
+// VecDequeの後端から取得・削除
+pub fn vecdeque_pop_back(deque: &mut VecDeque<i32>) {
     if let Some(back) = deque.pop_back() {
         println!("Back: {}", back);
     }
-    
-    // 先頭・末尾の参照
+}
+
+// VecDequeの先頭・末尾の参照
+pub fn vecdeque_front_back_ref(deque: &VecDeque<i32>) {
     if let Some(front) = deque.front() {
         println!("Front ref: {}", front);
     }
     if let Some(back) = deque.back() {
         println!("Back ref: {}", back);
     }
-    
-    // インデックスアクセス
+}
+
+// VecDequeのインデックスアクセス
+pub fn vecdeque_index_access(deque: &VecDeque<i32>) {
     if let Some(value) = deque.get(1) {
         println!("Index 1: {}", value);
     }
@@ -302,59 +447,108 @@ pub fn vecdeque_examples() {
 
 // BinaryHeap（優先度付きキュー）の基本操作
 pub fn binaryheap_examples() {
-    // 最大ヒープ（デフォルト）
+    binaryheap_max_heap();
+    binaryheap_min_heap();
+}
+
+// 最大ヒープの作成と操作
+pub fn binaryheap_max_heap() {
     let mut max_heap = BinaryHeap::new();
     
-    // 要素を追加
+    binaryheap_push_max(&mut max_heap);
+    binaryheap_display_max(&max_heap);
+    binaryheap_pop_max(&mut max_heap);
+}
+
+// 最小ヒープの作成と操作
+pub fn binaryheap_min_heap() {
+    let mut min_heap = BinaryHeap::new();
+    
+    binaryheap_push_min(&mut min_heap);
+    binaryheap_display_min(&min_heap);
+    binaryheap_pop_min(&mut min_heap);
+}
+
+// 最大ヒープに要素を追加
+pub fn binaryheap_push_max(max_heap: &mut BinaryHeap<i32>) {
     max_heap.push(3);
     max_heap.push(1);
     max_heap.push(4);
     max_heap.push(2);
-    
+}
+
+// 最大ヒープを表示
+pub fn binaryheap_display_max(max_heap: &BinaryHeap<i32>) {
     println!("Max heap: {:?}", max_heap);
-    
-    // 最大値を取得・削除
-    while let Some(max) = max_heap.pop() {
+}
+
+// 最大ヒープから最大値を取得・削除
+pub fn binaryheap_pop_max(max_heap: &mut BinaryHeap<i32>) {
+    let mut heap_copy = max_heap.clone();
+    while let Some(max) = heap_copy.pop() {
         println!("Max: {}", max);
     }
-    
-    // 最小ヒープ（Reverseを使用）
-    let mut min_heap = BinaryHeap::new();
+}
+
+// 最小ヒープに要素を追加
+pub fn binaryheap_push_min(min_heap: &mut BinaryHeap<Reverse<i32>>) {
     min_heap.push(Reverse(3));
     min_heap.push(Reverse(1));
     min_heap.push(Reverse(4));
     min_heap.push(Reverse(2));
-    
+}
+
+// 最小ヒープを表示
+pub fn binaryheap_display_min(min_heap: &BinaryHeap<Reverse<i32>>) {
     println!("Min heap: {:?}", min_heap);
-    
-    // 最小値を取得・削除
-    while let Some(Reverse(min)) = min_heap.pop() {
+}
+
+// 最小ヒープから最小値を取得・削除
+pub fn binaryheap_pop_min(min_heap: &mut BinaryHeap<Reverse<i32>>) {
+    let mut heap_copy = min_heap.clone();
+    while let Some(Reverse(min)) = heap_copy.pop() {
         println!("Min: {}", min);
     }
 }
 
 // BTreeMap（順序付きマップ）の基本操作
 pub fn btreemap_examples() {
-    // 新しいBTreeMapを作成
-    let mut map: BTreeMap<i32, String> = BTreeMap::new();
-    
-    // 値を挿入
+    let mut map = btreemap_create();
+    btreemap_insert(&mut map);
+    btreemap_iterate(&map);
+    btreemap_range_query(&map);
+    btreemap_first_last(&map);
+}
+
+// BTreeMapを作成
+pub fn btreemap_create() -> BTreeMap<i32, String> {
+    BTreeMap::new()
+}
+
+// BTreeMapに値を挿入
+pub fn btreemap_insert(map: &mut BTreeMap<i32, String>) {
     map.insert(3, "three".to_string());
     map.insert(1, "one".to_string());
     map.insert(4, "four".to_string());
     map.insert(2, "two".to_string());
-    
-    // キーの順序で反復処理
-    for (key, value) in &map {
+}
+
+// BTreeMapをキー順で反復処理
+pub fn btreemap_iterate(map: &BTreeMap<i32, String>) {
+    for (key, value) in map {
         println!("{}: {}", key, value);
     }
-    
-    // 範囲検索
+}
+
+// BTreeMapの範囲検索
+pub fn btreemap_range_query(map: &BTreeMap<i32, String>) {
     for (key, value) in map.range(2..=3) {
         println!("Range [2,3]: {}: {}", key, value);
     }
-    
-    // 最初と最後の要素
+}
+
+// BTreeMapの最初と最後の要素
+pub fn btreemap_first_last(map: &BTreeMap<i32, String>) {
     if let Some((first_key, first_value)) = map.first_key_value() {
         println!("First: {}: {}", first_key, first_value);
     }
@@ -365,26 +559,42 @@ pub fn btreemap_examples() {
 
 // BTreeSet（順序付き集合）の基本操作
 pub fn btreeset_examples() {
-    // 新しいBTreeSetを作成
-    let mut set: BTreeSet<i32> = BTreeSet::new();
-    
-    // 値を挿入
+    let mut set = btreeset_create();
+    btreeset_insert(&mut set);
+    btreeset_iterate(&set);
+    btreeset_range_query(&set);
+    btreeset_first_last(&set);
+}
+
+// BTreeSetを作成
+pub fn btreeset_create() -> BTreeSet<i32> {
+    BTreeSet::new()
+}
+
+// BTreeSetに値を挿入
+pub fn btreeset_insert(set: &mut BTreeSet<i32>) {
     set.insert(3);
     set.insert(1);
     set.insert(4);
     set.insert(2);
-    
-    // 順序で反復処理
-    for value in &set {
+}
+
+// BTreeSetを順序で反復処理
+pub fn btreeset_iterate(set: &BTreeSet<i32>) {
+    for value in set {
         println!("Value: {}", value);
     }
-    
-    // 範囲検索
+}
+
+// BTreeSetの範囲検索
+pub fn btreeset_range_query(set: &BTreeSet<i32>) {
     for value in set.range(2..=3) {
         println!("Range [2,3]: {}", value);
     }
-    
-    // 最初と最後の要素
+}
+
+// BTreeSetの最初と最後の要素
+pub fn btreeset_first_last(set: &BTreeSet<i32>) {
     if let Some(first) = set.first() {
         println!("First: {}", first);
     }
@@ -397,29 +607,48 @@ pub fn btreeset_examples() {
 pub fn vector_advanced() {
     let mut vec = vec![1, 2, 3, 4, 5];
     
-    // 挿入
-    vec.insert(2, 10); // インデックス2に10を挿入
+    vector_insert(&mut vec);
+    vector_remove(&mut vec);
+    vector_drain(&mut vec);
+    vector_retain(&mut vec);
+    vector_dedup(&mut vec);
+    vector_binary_search(&vec);
+}
+
+// Vectorに挿入
+pub fn vector_insert(vec: &mut Vec<i32>) {
+    vec.insert(2, 10);
     println!("After insert: {:?}", vec);
-    
-    // 削除
+}
+
+// Vectorから削除
+pub fn vector_remove(vec: &mut Vec<i32>) {
     let removed = vec.remove(2);
     println!("Removed: {}, Vec: {:?}", removed, vec);
-    
-    // 範囲削除
+}
+
+// Vectorの範囲削除
+pub fn vector_drain(vec: &mut Vec<i32>) {
     vec.drain(1..3);
     println!("After drain: {:?}", vec);
-    
-    // 条件による削除
+}
+
+// Vectorの条件による保持
+pub fn vector_retain(vec: &mut Vec<i32>) {
     vec.retain(|&x| x % 2 == 0);
     println!("Even numbers: {:?}", vec);
-    
-    // 重複削除
+}
+
+// Vectorの重複削除
+pub fn vector_dedup(vec: &mut Vec<i32>) {
     vec.extend([2, 4, 6, 2, 4]);
     vec.sort();
     vec.dedup();
     println!("After dedup: {:?}", vec);
-    
-    // 二分探索
+}
+
+// Vectorの二分探索
+pub fn vector_binary_search(vec: &Vec<i32>) {
     let target = 4;
     match vec.binary_search(&target) {
         Ok(index) => println!("Found {} at index {}", target, index),
@@ -475,18 +704,27 @@ impl UnionFind {
 
 // Union-Findの使用例
 pub fn unionfind_example() {
-    let mut uf = UnionFind::new(5);
-    
-    // 0と1を結合
+    let mut uf = unionfind_create(5);
+    unionfind_union_operations(&mut uf);
+    unionfind_connectivity_check(&mut uf);
+}
+
+// Union-Findを作成
+pub fn unionfind_create(n: usize) -> UnionFind {
+    UnionFind::new(n)
+}
+
+// Union-Findの結合操作
+pub fn unionfind_union_operations(uf: &mut UnionFind) {
     uf.union(0, 1);
-    // 2と3を結合
     uf.union(2, 3);
-    // 1と2を結合
     uf.union(1, 2);
-    
-    // 接続チェック
-    println!("0 and 3 connected: {}", uf.connected(0, 3)); // true
-    println!("0 and 4 connected: {}", uf.connected(0, 4)); // false
+}
+
+// Union-Findの接続チェック
+pub fn unionfind_connectivity_check(uf: &mut UnionFind) {
+    println!("0 and 3 connected: {}", uf.connected(0, 3));
+    println!("0 and 4 connected: {}", uf.connected(0, 4));
 }
 
 // セグメント木（区間和クエリ）
@@ -558,14 +796,30 @@ impl SegmentTree {
 // セグメント木の使用例
 pub fn segment_tree_example() {
     let arr = vec![1, 3, 5, 7, 9, 11];
-    let mut seg_tree = SegmentTree::new(&arr);
-    
-    // 区間和クエリ
-    println!("Sum of range [1,3]: {}", seg_tree.query(1, 3)); // 3 + 5 + 7 = 15
-    
-    // 更新
+    let mut seg_tree = segment_tree_create(&arr);
+    segment_tree_query(&seg_tree);
+    segment_tree_update(&mut seg_tree);
+    segment_tree_query_after_update(&seg_tree);
+}
+
+// セグメント木を作成
+pub fn segment_tree_create(arr: &[i64]) -> SegmentTree {
+    SegmentTree::new(arr)
+}
+
+// セグメント木のクエリ
+pub fn segment_tree_query(seg_tree: &SegmentTree) {
+    println!("Sum of range [1,3]: {}", seg_tree.query(1, 3));
+}
+
+// セグメント木の更新
+pub fn segment_tree_update(seg_tree: &mut SegmentTree) {
     seg_tree.update(1, 10);
-    println!("Sum of range [1,3] after update: {}", seg_tree.query(1, 3)); // 10 + 5 + 7 = 22
+}
+
+// セグメント木の更新後クエリ
+pub fn segment_tree_query_after_update(seg_tree: &SegmentTree) {
+    println!("Sum of range [1,3] after update: {}", seg_tree.query(1, 3));
 }
 
 // Fenwick木（Binary Indexed Tree）
@@ -615,19 +869,33 @@ impl FenwickTree {
 
 // Fenwick木の使用例
 pub fn fenwick_tree_example() {
-    let mut ft = FenwickTree::new(6);
-    
-    // 要素を追加
+    let mut ft = fenwick_tree_create(6);
+    fenwick_tree_add_elements(&mut ft);
+    fenwick_tree_prefix_sum(&ft);
+    fenwick_tree_range_sum(&ft);
+}
+
+// Fenwick木を作成
+pub fn fenwick_tree_create(n: usize) -> FenwickTree {
+    FenwickTree::new(n)
+}
+
+// Fenwick木に要素を追加
+pub fn fenwick_tree_add_elements(ft: &mut FenwickTree) {
     ft.add(0, 1);
     ft.add(1, 3);
     ft.add(2, 5);
     ft.add(3, 7);
     ft.add(4, 9);
     ft.add(5, 11);
-    
-    // 前綴和
-    println!("Sum of first 4 elements: {}", ft.sum(3)); // 1 + 3 + 5 + 7 = 16
-    
-    // 区間和
-    println!("Sum of range [1,3]: {}", ft.range_sum(1, 3)); // 3 + 5 + 7 = 15
+}
+
+// Fenwick木の前綴和
+pub fn fenwick_tree_prefix_sum(ft: &FenwickTree) {
+    println!("Sum of first 4 elements: {}", ft.sum(3));
+}
+
+// Fenwick木の区間和
+pub fn fenwick_tree_range_sum(ft: &FenwickTree) {
+    println!("Sum of range [1,3]: {}", ft.range_sum(1, 3));
 }
