@@ -1,3 +1,151 @@
+// 文字列の先頭の空白や改行を削除する
+pub fn trim_start_string(s: &str) -> &str {
+    s.trim_start()
+}
+
+// 文字列の後方の空白や改行を削除する
+pub fn trim_end_string(s: &str) -> &str {
+    s.trim_end()
+}
+
+// 文字列を空白で区切る
+pub fn split_whitespace(s: &str) -> Vec<&str> {
+    s.split_whitespace().collect()
+}
+
+// 文字列が指定した部分文字列を含むか判定する
+pub fn contains_substring(s: &str, needle: &str) -> bool {
+    s.contains(needle)
+}
+
+// 文字列の指定した範囲の部分文字列を安全に取得する
+pub fn get_substring(s: &str, start: usize, end: usize) -> Option<&str> {
+    s.get(start..end)
+}
+
+// 文字列の指定回数だけ置換する
+pub fn replacen_substring(s: &str, from: &str, to: &str, count: usize) -> String {
+    s.replacen(from, to, count)
+}
+
+// 部分文字列が最初に一致する位置を取得する
+pub fn find_substring(s: &str, needle: &str) -> Option<usize> {
+    s.find(needle)
+}
+
+// 部分文字列が最後に一致する位置を取得する
+pub fn rfind_substring(s: &str, needle: &str) -> Option<usize> {
+    s.rfind(needle)
+}
+
+// 文字列のインデックスと文字を両方取得する
+pub fn get_char_indices(s: &str) -> Vec<(usize, char)> {
+    s.char_indices().collect()
+}
+
+// 大文字小文字を無視して文字列を比較する
+pub fn eq_ignore_ascii_case(s1: &str, s2: &str) -> bool {
+    s1.eq_ignore_ascii_case(s2)
+}
+
+// 指定した接頭辞を文字列から削る
+pub fn strip_prefix_string<'a>(s: &'a str, prefix: &'a str) -> Option<&'a str> {
+    s.strip_prefix(prefix)
+}
+
+// 指定した接尾辞を文字列から削る
+pub fn strip_suffix_string<'a>(s: &'a str, suffix: &'a str) -> Option<&'a str> {
+    s.strip_suffix(suffix)
+}
+
+// 文字列を指定回数繰り返して新しい文字列を作る
+pub fn repeat_string(s: &str, n: usize) -> String {
+    s.repeat(n)
+}
+
+// 特殊文字をエスケープ表記に変換する
+pub fn escape_default_string(s: &str) -> String {
+    s.escape_default().to_string()
+}
+
+// 条件を満たす文字だけを文字列に残す
+pub fn retain_chars<F>(s: &mut String, f: F)
+where
+    F: FnMut(char) -> bool,
+{
+    s.retain(f)
+}
+
+// 文字列を行単位に分割する
+pub fn get_lines(s: &str) -> Vec<&str> {
+    s.lines().collect()
+}
+
+// 文字列を指定した文字で指定回数まで分割する
+pub fn splitn_string<'a>(s: &'a str, n: usize, delimiter: char) -> Vec<&'a str> {
+    s.splitn(n, delimiter).collect()
+}
+
+// 文字列を右から指定した文字で分割する
+pub fn rsplit_string<'a>(s: &'a str, delimiter: char) -> Vec<&'a str> {
+    s.rsplit(delimiter).collect()
+}
+
+// 文字列に指定した文字が含まれるか判定する
+pub fn contains_char(s: &str, c: char) -> bool {
+    s.contains(c)
+}
+
+// 文字列が空文字か判定する
+pub fn is_empty_string(s: &str) -> bool {
+    s.is_empty()
+}
+
+// 文字列をn文字目以降でカットする（可変String用）
+pub fn truncate_string(s: &mut String, n: usize) {
+    s.truncate(n);
+}
+
+// 文字列の一部を範囲指定で置換する（String専用）
+pub fn replace_range_string<R>(s: &mut String, range: R, replace_with: &str)
+where
+    R: std::ops::RangeBounds<usize> + Clone,
+{
+    s.replace_range(range, replace_with);
+}
+
+// パターンが現れるインデックスと内容を取得する
+pub fn match_indices_string<'a>(s: &'a str, pattern: &'a str) -> Vec<(usize, &'a str)> {
+    s.match_indices(pattern).collect()
+}
+
+// 文字列を右から指定した文字で指定回数まで分割する
+pub fn rsplitn_string<'a>(s: &'a str, n: usize, delimiter: char) -> Vec<&'a str> {
+    s.rsplitn(n, delimiter).collect()
+}
+
+// 条件に一致する文字を両端から削除する
+pub fn trim_matches_string<'a, F>(s: &'a str, f: F) -> &'a str
+where
+    F: Fn(char) -> bool,
+{
+    s.trim_matches(f)
+}
+
+// 文字列の末尾に文字を追加する
+pub fn push_char_to_string(s: &mut String, c: char) {
+    s.push(c);
+}
+
+// 文字列の末尾に別の文字列を追加する
+pub fn push_string_to_string(s: &mut String, other: &str) {
+    s.push_str(other);
+}
+
+// 文字列の末尾から一文字削除して返す
+pub fn pop_char_from_string(s: &mut String) -> Option<char> {
+    s.pop()
+}
 
 // 文字列を逆順にする
 pub fn reverse_string(s: &str) -> String {
