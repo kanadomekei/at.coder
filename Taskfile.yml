@@ -30,6 +30,36 @@ tasks:
         # Create contest directory with acc
         acc new $CONTEST_ID
         
+        # Update Rust package names to use contest ID and problem letter
+        cd $CONTEST_ID
+        
+        # First, update all package names to avoid conflicts
+        for problem_dir in */; do
+          if [ -d "$problem_dir" ]; then
+            if [ -f "$problem_dir/rust/Cargo.toml" ]; then
+              problem_letter=$(basename "$problem_dir")
+              package_name="$CONTEST_ID-$problem_letter"
+              sed -i '' "s/name = \".*\"/name = \"$package_name\"/" "$problem_dir/rust/Cargo.toml"
+              echo "Updated Rust package name to $package_name in $problem_dir"
+            fi
+          fi
+        done
+        
+        # Then, add dependencies to all projects
+        for problem_dir in */; do
+          if [ -d "$problem_dir" ]; then
+            if [ -f "$problem_dir/rust/Cargo.toml" ]; then
+              echo "Adding dependencies to $problem_dir"
+              cd "$problem_dir/rust"
+              cargo add proconio@0.3.6 --quiet || true
+              cargo add itertools@0.9.0 --quiet || true
+              cd ../..
+            fi
+          fi
+        done
+        
+        cd ..
+        
         # If specific languages are specified, remove unwanted language directories
         if [ ${#ARGS[@]} -gt 1 ]; then
           SPECIFIED_LANGS=("${ARGS[@]:1}")
@@ -201,7 +231,7 @@ tasks:
               if [ ! -d "$PRACTICE_DIR/rust" ]; then
                 mkdir -p "$PRACTICE_DIR/rust"
                 cd "$PRACTICE_DIR/rust"
-                cargo init --name main .
+                cargo init --name "practice-$NAME" .
                 cp "../../../templates/default/rust/src/main.rs" "src/main.rs"
                 cargo add proconio@0.3.6
                 cargo add itertools@0.9.0
