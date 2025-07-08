@@ -39,25 +39,30 @@ struct LogAnalytics {
 
 fn analyze_logs(log_entries: Vec<LogEntry>) -> LogAnalytics {
     let total_entries = log_entries.len();
-    
+
     // 関数型的なデータ処理
-    let error_count = log_entries.iter()
+    let error_count = log_entries
+        .iter()
         .filter(|entry| entry.level == "ERROR")
         .count();
-    
-    let warning_count = log_entries.iter()
+
+    let warning_count = log_entries
+        .iter()
         .filter(|entry| entry.level == "WARN")
         .count();
-    
-    let source_distribution = log_entries.iter()
-        .fold(HashMap::new(), |mut acc, entry| {
-            *acc.entry(entry.source.clone()).or_insert(0) += 1;
-            acc
-        });
-    
-    let hourly_distribution = log_entries.iter()
+
+    let source_distribution = log_entries.iter().fold(HashMap::new(), |mut acc, entry| {
+        *acc.entry(entry.source.clone()).or_insert(0) += 1;
+        acc
+    });
+
+    let hourly_distribution = log_entries
+        .iter()
         .filter_map(|entry| {
-            entry.timestamp.split('T').nth(1)
+            entry
+                .timestamp
+                .split('T')
+                .nth(1)
                 .and_then(|time| time.split(':').next())
                 .map(|hour| hour.to_string())
         })
@@ -65,7 +70,7 @@ fn analyze_logs(log_entries: Vec<LogEntry>) -> LogAnalytics {
             *acc.entry(hour).or_insert(0) += 1;
             acc
         });
-    
+
     LogAnalytics {
         total_entries,
         error_count,
@@ -85,11 +90,12 @@ fn log_analysis_example() {
         "2024-01-01T11:30:00 | ERROR | File not found | file_handler.rs",
         "2024-01-01T12:00:00 | INFO | Scheduled task completed | scheduler.rs",
     ];
-    
-    let log_entries: Vec<LogEntry> = sample_logs.iter()
+
+    let log_entries: Vec<LogEntry> = sample_logs
+        .iter()
         .filter_map(|line| LogEntry::parse(line))
         .collect();
-    
+
     let analytics = analyze_logs(log_entries);
     println!("Log Analytics: {:?}", analytics);
 }
@@ -121,7 +127,8 @@ fn validate_data(data: &RawData) -> Result<&RawData, String> {
 }
 
 fn parse_numeric(data: &RawData) -> Result<f64, String> {
-    data.value.parse::<f64>()
+    data.value
+        .parse::<f64>()
         .map_err(|_| format!("Invalid numeric value: {}", data.value))
 }
 
@@ -135,49 +142,71 @@ fn normalize_value(value: f64, max_value: f64) -> f64 {
 
 fn process_data_pipeline(raw_data: Vec<RawData>) -> (Vec<ProcessedData>, Vec<String>) {
     // 最大値を計算（正規化のため）
-    let max_value = raw_data.iter()
+    let max_value = raw_data
+        .iter()
         .filter_map(|data| data.value.parse::<f64>().ok())
         .fold(0.0f64, |max, val| max.max(val));
-    
+
     // データ処理パイプライン
-    let (processed, errors): (Vec<_>, Vec<_>) = raw_data.iter()
+    let (processed, errors): (Vec<_>, Vec<_>) = raw_data
+        .iter()
         .map(|data| {
-            validate_data(data)
-                .and_then(|valid_data| {
-                    parse_numeric(valid_data)
-                        .map(|numeric_value| ProcessedData {
-                            id: valid_data.id.clone(),
-                            numeric_value,
-                            category: valid_data.category.clone(),
-                            normalized_value: normalize_value(numeric_value, max_value),
-                        })
+            validate_data(data).and_then(|valid_data| {
+                parse_numeric(valid_data).map(|numeric_value| ProcessedData {
+                    id: valid_data.id.clone(),
+                    numeric_value,
+                    category: valid_data.category.clone(),
+                    normalized_value: normalize_value(numeric_value, max_value),
                 })
+            })
         })
         .partition(|result| result.is_ok());
-    
-    let processed_data: Vec<ProcessedData> = processed.into_iter()
+
+    let processed_data: Vec<ProcessedData> = processed
+        .into_iter()
         .map(|result| result.unwrap())
         .collect();
-    
-    let error_messages: Vec<String> = errors.into_iter()
+
+    let error_messages: Vec<String> = errors
+        .into_iter()
         .map(|result| result.unwrap_err())
         .collect();
-    
+
     (processed_data, error_messages)
 }
 
 #[allow(unused)]
 fn data_pipeline_example() {
     let raw_data = vec![
-        RawData { id: "1".to_string(), value: "100".to_string(), category: "A".to_string() },
-        RawData { id: "2".to_string(), value: "200".to_string(), category: "B".to_string() },
-        RawData { id: "3".to_string(), value: "invalid".to_string(), category: "A".to_string() },
-        RawData { id: "".to_string(), value: "150".to_string(), category: "C".to_string() },
-        RawData { id: "4".to_string(), value: "75".to_string(), category: "B".to_string() },
+        RawData {
+            id: "1".to_string(),
+            value: "100".to_string(),
+            category: "A".to_string(),
+        },
+        RawData {
+            id: "2".to_string(),
+            value: "200".to_string(),
+            category: "B".to_string(),
+        },
+        RawData {
+            id: "3".to_string(),
+            value: "invalid".to_string(),
+            category: "A".to_string(),
+        },
+        RawData {
+            id: "".to_string(),
+            value: "150".to_string(),
+            category: "C".to_string(),
+        },
+        RawData {
+            id: "4".to_string(),
+            value: "75".to_string(),
+            category: "B".to_string(),
+        },
     ];
-    
+
     let (processed, errors) = process_data_pipeline(raw_data);
-    
+
     println!("Processed data: {:?}", processed);
     println!("Errors: {:?}", errors);
 }
@@ -204,53 +233,65 @@ impl Default for Config {
 
 fn load_config_from_env() -> Result<Config, String> {
     let mut config = Config::default();
-    
+
     // 環境変数から設定を読み込む関数型的なアプローチ
     type ConfigSetter = Box<dyn Fn(&mut Config, String) -> Result<(), &'static str>>;
     let env_mappings: Vec<(&str, ConfigSetter)> = vec![
-        ("DATABASE_URL", Box::new(|config: &mut Config, value: String| {
-            config.database_url = value;
-            Ok(())
-        })),
-        ("PORT", Box::new(|config: &mut Config, value: String| {
-            config.port = value.parse().map_err(|_| "Invalid port number")?;
-            Ok(())
-        })),
-        ("DEBUG_MODE", Box::new(|config: &mut Config, value: String| {
-            config.debug_mode = value.parse().map_err(|_| "Invalid boolean value")?;
-            Ok(())
-        })),
-        ("MAX_CONNECTIONS", Box::new(|config: &mut Config, value: String| {
-            config.max_connections = value.parse().map_err(|_| "Invalid number")?;
-            Ok(())
-        })),
+        (
+            "DATABASE_URL",
+            Box::new(|config: &mut Config, value: String| {
+                config.database_url = value;
+                Ok(())
+            }),
+        ),
+        (
+            "PORT",
+            Box::new(|config: &mut Config, value: String| {
+                config.port = value.parse().map_err(|_| "Invalid port number")?;
+                Ok(())
+            }),
+        ),
+        (
+            "DEBUG_MODE",
+            Box::new(|config: &mut Config, value: String| {
+                config.debug_mode = value.parse().map_err(|_| "Invalid boolean value")?;
+                Ok(())
+            }),
+        ),
+        (
+            "MAX_CONNECTIONS",
+            Box::new(|config: &mut Config, value: String| {
+                config.max_connections = value.parse().map_err(|_| "Invalid number")?;
+                Ok(())
+            }),
+        ),
     ];
-    
+
     // 環境変数の処理
     for (key, setter) in env_mappings {
         if let Ok(value) = std::env::var(key) {
             setter(&mut config, value).map_err(|e| format!("Error setting {}: {}", key, e))?;
         }
     }
-    
+
     Ok(config)
 }
 
 fn validate_config(config: &Config) -> Result<&Config, Vec<String>> {
     let mut errors = Vec::new();
-    
+
     if config.port < 1024 {
         errors.push("Port should be >= 1024".to_string());
     }
-    
+
     if config.max_connections == 0 {
         errors.push("Max connections should be > 0".to_string());
     }
-    
+
     if config.database_url.is_empty() {
         errors.push("Database URL cannot be empty".to_string());
     }
-    
+
     if errors.is_empty() {
         Ok(config)
     } else {
@@ -262,17 +303,15 @@ fn validate_config(config: &Config) -> Result<&Config, Vec<String>> {
 fn config_management_example() {
     // 設定の読み込みと検証
     let config = load_config_from_env()
-        .and_then(|config| {
-            match validate_config(&config) {
-                Ok(_) => Ok(config),
-                Err(errors) => Err(errors.join(", "))
-            }
+        .and_then(|config| match validate_config(&config) {
+            Ok(_) => Ok(config),
+            Err(errors) => Err(errors.join(", ")),
         })
         .unwrap_or_else(|errors| {
             println!("Configuration errors: {}", errors);
             Config::default()
         });
-    
+
     println!("Final config: {:?}", config);
 }
 
@@ -295,7 +334,7 @@ where
             max_size,
         }
     }
-    
+
     fn get_or_compute<F>(&mut self, key: K, compute: F) -> V
     where
         F: FnOnce() -> V,
@@ -308,7 +347,7 @@ where
             value
         }
     }
-    
+
     fn insert(&mut self, key: K, value: V) {
         if self.data.len() >= self.max_size {
             // 簡単なLRU実装（実際にはもっと複雑）
@@ -333,14 +372,15 @@ fn expensive_computation(n: u32) -> u32 {
 #[allow(unused)]
 fn cache_system_example() {
     let mut cache = Cache::new(10);
-    
+
     // 関数型的なキャッシュ使用
     let numbers = vec![10, 5, 10, 8, 5, 12];
-    
-    let results: Vec<u32> = numbers.iter()
+
+    let results: Vec<u32> = numbers
+        .iter()
         .map(|&n| cache.get_or_compute(n, || expensive_computation(n)))
         .collect();
-    
+
     println!("Results: {:?}", results);
 }
 
@@ -388,13 +428,13 @@ fn validate_user(name: &str, email: &str, age: u32) -> ValidationResult<User> {
     let name_result = validate_name(name);
     let email_result = validate_email(email);
     let age_result = validate_age(age);
-    
+
     // 全てのバリデーション結果を組み合わせ
     match (name_result, email_result, age_result) {
         (Ok(name), Ok(email), Ok(age)) => Ok(User { name, email, age }),
         _ => {
             let mut errors = Vec::new();
-            
+
             if let Err(mut name_errors) = validate_name(name) {
                 errors.append(&mut name_errors);
             }
@@ -404,7 +444,7 @@ fn validate_user(name: &str, email: &str, age: u32) -> ValidationResult<User> {
             if let Err(mut age_errors) = validate_age(age) {
                 errors.append(&mut age_errors);
             }
-            
+
             Err(errors)
         }
     }
@@ -418,11 +458,12 @@ fn validation_system_example() {
         ("Charlie", "invalid-email", 20),
         ("David", "david@example.com", 10),
     ];
-    
-    let results: Vec<ValidationResult<User>> = test_users.iter()
+
+    let results: Vec<ValidationResult<User>> = test_users
+        .iter()
         .map(|(name, email, age)| validate_user(name, email, *age))
         .collect();
-    
+
     for (i, result) in results.iter().enumerate() {
         match result {
             Ok(user) => println!("User {}: {:?}", i + 1, user),
@@ -434,10 +475,22 @@ fn validation_system_example() {
 // 6. イベント処理システム
 #[derive(Debug, Clone)]
 enum Event {
-    UserRegistered { user_id: String, email: String },
-    UserLoggedIn { user_id: String },
-    OrderPlaced { user_id: String, order_id: String, amount: f64 },
-    PaymentProcessed { order_id: String, amount: f64 },
+    UserRegistered {
+        user_id: String,
+        email: String,
+    },
+    UserLoggedIn {
+        user_id: String,
+    },
+    OrderPlaced {
+        user_id: String,
+        order_id: String,
+        amount: f64,
+    },
+    PaymentProcessed {
+        order_id: String,
+        amount: f64,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -462,7 +515,7 @@ fn process_events(events: Vec<Event>) -> EventStats {
         },
         |mut stats, event| {
             stats.total_events += 1;
-            
+
             match event {
                 Event::UserRegistered { .. } => stats.registrations += 1,
                 Event::UserLoggedIn { .. } => stats.logins += 1,
@@ -472,14 +525,15 @@ fn process_events(events: Vec<Event>) -> EventStats {
                 }
                 Event::PaymentProcessed { .. } => stats.payments += 1,
             }
-            
+
             stats
         },
     )
 }
 
 fn generate_user_insights(events: Vec<Event>) -> HashMap<String, usize> {
-    events.iter()
+    events
+        .iter()
         .filter_map(|event| match event {
             Event::UserRegistered { user_id, .. } => Some((user_id.clone(), "registration")),
             Event::UserLoggedIn { user_id } => Some((user_id.clone(), "login")),
@@ -496,18 +550,39 @@ fn generate_user_insights(events: Vec<Event>) -> HashMap<String, usize> {
 #[allow(unused)]
 fn event_processing_example() {
     let events = vec![
-        Event::UserRegistered { user_id: "user1".to_string(), email: "user1@example.com".to_string() },
-        Event::UserLoggedIn { user_id: "user1".to_string() },
-        Event::OrderPlaced { user_id: "user1".to_string(), order_id: "order1".to_string(), amount: 99.99 },
-        Event::PaymentProcessed { order_id: "order1".to_string(), amount: 99.99 },
-        Event::UserRegistered { user_id: "user2".to_string(), email: "user2@example.com".to_string() },
-        Event::UserLoggedIn { user_id: "user2".to_string() },
-        Event::OrderPlaced { user_id: "user2".to_string(), order_id: "order2".to_string(), amount: 149.99 },
+        Event::UserRegistered {
+            user_id: "user1".to_string(),
+            email: "user1@example.com".to_string(),
+        },
+        Event::UserLoggedIn {
+            user_id: "user1".to_string(),
+        },
+        Event::OrderPlaced {
+            user_id: "user1".to_string(),
+            order_id: "order1".to_string(),
+            amount: 99.99,
+        },
+        Event::PaymentProcessed {
+            order_id: "order1".to_string(),
+            amount: 99.99,
+        },
+        Event::UserRegistered {
+            user_id: "user2".to_string(),
+            email: "user2@example.com".to_string(),
+        },
+        Event::UserLoggedIn {
+            user_id: "user2".to_string(),
+        },
+        Event::OrderPlaced {
+            user_id: "user2".to_string(),
+            order_id: "order2".to_string(),
+            amount: 149.99,
+        },
     ];
-    
+
     let stats = process_events(events.clone());
     println!("Event stats: {:?}", stats);
-    
+
     let user_insights = generate_user_insights(events);
     println!("User insights: {:?}", user_insights);
 }
@@ -531,24 +606,30 @@ impl FeatureFlags {
             flags: HashMap::new(),
         }
     }
-    
+
     fn add_flag(&mut self, name: String, enabled: bool, rollout_percentage: f64) {
-        self.flags.insert(name.clone(), FeatureFlag {
-            name,
-            enabled,
-            rollout_percentage,
-        });
+        self.flags.insert(
+            name.clone(),
+            FeatureFlag {
+                name,
+                enabled,
+                rollout_percentage,
+            },
+        );
     }
-    
+
     fn is_enabled(&self, flag_name: &str, user_id: &str) -> bool {
-        self.flags.get(flag_name)
+        self.flags
+            .get(flag_name)
             .map(|flag| {
                 if !flag.enabled {
                     return false;
                 }
-                
+
                 // 簡単なハッシュベースの判定
-                let hash = user_id.bytes().fold(0u32, |acc, b| acc.wrapping_add(b as u32));
+                let hash = user_id
+                    .bytes()
+                    .fold(0u32, |acc, b| acc.wrapping_add(b as u32));
                 let percentage = (hash % 100) as f64;
                 percentage < flag.rollout_percentage
             })
@@ -562,41 +643,43 @@ fn feature_flag_example() {
     flags.add_flag("new_ui".to_string(), true, 50.0);
     flags.add_flag("beta_feature".to_string(), true, 10.0);
     flags.add_flag("disabled_feature".to_string(), false, 100.0);
-    
+
     let test_users = vec!["user1", "user2", "user3", "user4", "user5"];
-    
+
     for user in test_users {
         let new_ui_enabled = flags.is_enabled("new_ui", user);
         let beta_enabled = flags.is_enabled("beta_feature", user);
         let disabled_enabled = flags.is_enabled("disabled_feature", user);
-        
-        println!("User {}: new_ui={}, beta={}, disabled={}", 
-                 user, new_ui_enabled, beta_enabled, disabled_enabled);
+
+        println!(
+            "User {}: new_ui={}, beta={}, disabled={}",
+            user, new_ui_enabled, beta_enabled, disabled_enabled
+        );
     }
 }
 
 // メイン関数
 fn main() {
     println!("=== Rust 関数型プログラミング 実践編 ===\n");
-    
+
     println!("1. ログ解析システム:");
     log_analysis_example();
-    
+
     println!("\n2. データ変換パイプライン:");
     data_pipeline_example();
-    
+
     println!("\n3. 設定管理システム:");
     config_management_example();
-    
+
     println!("\n4. キャッシュシステム:");
     cache_system_example();
-    
+
     println!("\n5. バリデーションシステム:");
     validation_system_example();
-    
+
     println!("\n6. イベント処理システム:");
     event_processing_example();
-    
+
     println!("\n7. 機能フラグシステム:");
     feature_flag_example();
 }
@@ -605,7 +688,7 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn test_log_parsing() {
         let log_line = "2024-01-01T10:30:00 | INFO | Test message | test.rs";
@@ -613,7 +696,7 @@ mod tests {
         assert_eq!(entry.level, "INFO");
         assert_eq!(entry.message, "Test message");
     }
-    
+
     #[test]
     fn test_data_validation() {
         let valid_data = RawData {
@@ -621,53 +704,60 @@ mod tests {
             value: "123".to_string(),
             category: "A".to_string(),
         };
-        
+
         assert!(validate_data(&valid_data).is_ok());
-        
+
         let invalid_data = RawData {
             id: "".to_string(),
             value: "123".to_string(),
             category: "A".to_string(),
         };
-        
+
         assert!(validate_data(&invalid_data).is_err());
     }
-    
+
     #[test]
     fn test_user_validation() {
         let valid_user = validate_user("Alice", "alice@example.com", 25);
         assert!(valid_user.is_ok());
-        
+
         let invalid_user = validate_user("", "invalid-email", 10);
         assert!(invalid_user.is_err());
-        
+
         if let Err(errors) = invalid_user {
             assert!(errors.len() > 0);
         }
     }
-    
+
     #[test]
     fn test_event_processing() {
         let events = vec![
-            Event::UserRegistered { user_id: "user1".to_string(), email: "test@example.com".to_string() },
-            Event::OrderPlaced { user_id: "user1".to_string(), order_id: "order1".to_string(), amount: 100.0 },
+            Event::UserRegistered {
+                user_id: "user1".to_string(),
+                email: "test@example.com".to_string(),
+            },
+            Event::OrderPlaced {
+                user_id: "user1".to_string(),
+                order_id: "order1".to_string(),
+                amount: 100.0,
+            },
         ];
-        
+
         let stats = process_events(events);
         assert_eq!(stats.total_events, 2);
         assert_eq!(stats.registrations, 1);
         assert_eq!(stats.orders, 1);
         assert_eq!(stats.total_revenue, 100.0);
     }
-    
+
     #[test]
     fn test_cache_system() {
         let mut cache = Cache::new(2);
-        
+
         // 初回は計算される
         let result1 = cache.get_or_compute("key1", || 42);
         assert_eq!(result1, 42);
-        
+
         // 2回目はキャッシュから取得
         let result2 = cache.get_or_compute("key1", || 100);
         assert_eq!(result2, 42); // キャッシュされた値

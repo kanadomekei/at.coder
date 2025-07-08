@@ -1,6 +1,6 @@
+use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
-use std::sync::{Arc, Mutex};
 
 /// # 1. 並行処理 (Concurrency) の例
 ///
@@ -8,7 +8,7 @@ use std::sync::{Arc, Mutex};
 /// そこで独立したタスクを実行させる例です。
 fn main() {
     println!("--- 1. 所有権をムーブする単純な並行処理 ---");
-    
+
     let v = vec![1, 2, 3, 4, 5];
 
     // `thread::spawn`で新しいスレッドを開始します。
@@ -33,14 +33,17 @@ fn main() {
     // `handle.join()` は、生成したスレッドの処理が終わるのを待ち、その結果を受け取ります。
     let sum = handle.join().unwrap();
 
-    println!("メインスレッド: 別スreadから結果を受け取りました。合計は {} です。", sum);
+    println!(
+        "メインスレッド: 別スreadから結果を受け取りました。合計は {} です。",
+        sum
+    );
 
     println!("\n--- 2. Arc<Mutex<T>> でデータを共有する並行処理 ---");
-    
+
     // 複数のスレッドからデータを「共有」して変更したい場合は、`Arc<Mutex<T>>` を使います。
     // Arc:   スレッドセーフな参照カウンタ (Atomically Reference Counted)
     // Mutex: 상호 배제 (Mutual Exclusion) のためのロック
-    
+
     let counter = Arc::new(Mutex::new(0));
     let mut handles = vec![];
 
@@ -51,7 +54,10 @@ fn main() {
             // `lock()`でロックを取得し、他のスレッドが同時にアクセスできないようにします。
             let mut num = counter_clone.lock().unwrap();
             *num += 1;
-            println!("スレッド {}: カウンタをインクリメントしました。現在の値: {}", i, *num);
+            println!(
+                "スレッド {}: カウンタをインクリメントしました。現在の値: {}",
+                i, *num
+            );
             // `num` (MutexGuard) がこのスコープを抜けるときに、自動的にロックが解放されます。
         });
         handles.push(handle);
@@ -62,5 +68,8 @@ fn main() {
         handle.join().unwrap();
     }
 
-    println!("\n最終結果: 10個のスレッドがすべて完了しました。カウンタの値: {}", *counter.lock().unwrap());
-} 
+    println!(
+        "\n最終結果: 10個のスレッドがすべて完了しました。カウンタの値: {}",
+        *counter.lock().unwrap()
+    );
+}

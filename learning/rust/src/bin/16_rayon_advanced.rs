@@ -1,12 +1,12 @@
-use rayon::prelude::*;
-use rayon::join;
-use std::time::Instant;
 use rand::prelude::*;
+use rayon::join;
+use rayon::prelude::*;
+use std::time::Instant;
 
 fn main() {
     println!("=== Rayon 高度な並列処理 - 逐次処理との比較 ===");
     println!("CPUコア数: {}", rayon::current_num_threads());
-    
+
     println!("\n--- 1. 並列ソート vs 逐次ソート ---");
     parallel_sort_demo();
 
@@ -26,7 +26,7 @@ fn parallel_sort_demo() {
     let size = 10_000_000;
     let mut large_vec: Vec<u32> = (0..size).collect();
     large_vec.shuffle(&mut rng);
-    
+
     println!("  要素数: {}", size);
     println!("  🔀 ランダムにシャッフルされたデータをソート");
 
@@ -46,11 +46,14 @@ fn parallel_sort_demo() {
 
     if duration_par < duration_seq {
         let improvement = duration_seq.as_micros() as f64 / duration_par.as_micros() as f64;
-        println!("  🚀 並列ソートは逐次ソートより {:.2} 倍高速！", improvement);
+        println!(
+            "  🚀 並列ソートは逐次ソートより {:.2} 倍高速！",
+            improvement
+        );
     } else {
         println!("  ⚠️ 並列ソートは逐次ソートより高速ではありませんでした");
     }
-    
+
     // 結果の確認
     let first_10_seq: Vec<u32> = vec_seq.iter().take(10).copied().collect();
     let first_10_par: Vec<u32> = vec_par.iter().take(10).copied().collect();
@@ -63,7 +66,7 @@ fn parallel_find_demo() {
     let size = 50_000_000;
     let huge_vector: Vec<i64> = (1..=size).collect();
     let target = size - 1; // 最後の方にある値を探す
-    
+
     println!("  要素数: {}", size);
     println!("  🔍 値 {} を探索", target);
 
@@ -71,15 +74,15 @@ fn parallel_find_demo() {
     let start_seq = Instant::now();
     let result_seq = huge_vector.iter().find(|&&x| x == target);
     let duration_seq = start_seq.elapsed();
-    
+
     // 並列検索
     let start_par = Instant::now();
     let result_par = huge_vector.par_iter().find_any(|&&x| x == target);
     let duration_par = start_par.elapsed();
-    
+
     println!("  逐次検索時間: {:?}", duration_seq);
     println!("  並列検索時間: {:?}", duration_par);
-    
+
     match (result_seq, result_par) {
         (Some(found_seq), Some(_found_par)) => {
             println!("  ✅ 両方とも値 {} を発見", found_seq);
@@ -89,7 +92,7 @@ fn parallel_find_demo() {
             } else {
                 println!("  ⚠️ 並列検索は逐次検索より高速ではありませんでした");
             }
-        },
+        }
         _ => println!("  ❌ 値が見つかりませんでした"),
     }
 }
@@ -97,13 +100,13 @@ fn parallel_find_demo() {
 /// 互いに独立した2つの重い処理を並列で実行する
 fn join_demo() {
     println!("  🔄 2つの独立したタスクを実行");
-    
+
     // 逐次実行
     let start_seq = Instant::now();
     let sum_seq = (1..10_000_000).sum::<u64>();
     let product_seq = (1..=20).product::<u64>();
     let duration_seq = start_seq.elapsed();
-    
+
     // 並列実行
     let start_par = Instant::now();
     let (sum_par, product_par) = join(
@@ -114,11 +117,14 @@ fn join_demo() {
 
     println!("  逐次実行時間: {:?}", duration_seq);
     println!("  並列実行時間: {:?}", duration_par);
-    
+
     println!("  合計計算の結果: {}", sum_par);
     println!("  階乗計算の結果: {}", product_par);
-    println!("  結果の一致: {}", sum_seq == sum_par && product_seq == product_par);
-    
+    println!(
+        "  結果の一致: {}",
+        sum_seq == sum_par && product_seq == product_par
+    );
+
     if duration_par < duration_seq {
         let improvement = duration_seq.as_micros() as f64 / duration_par.as_micros() as f64;
         println!("  🚀 並列実行は逐次実行より {:.2} 倍高速！", improvement);
@@ -141,7 +147,7 @@ fn scope_demo() {
         *x = if i < 500 { 1 } else { 2 };
     });
     let duration_seq = start_seq.elapsed();
-    
+
     // 並列処理での配列初期化
     let start_par = Instant::now();
     let (first_half, second_half) = array.split_at_mut(500);
@@ -159,18 +165,18 @@ fn scope_demo() {
     println!("  並列処理時間: {:?}", duration_par);
     println!("  スコープ処理後の配列（最初の10個）: {:?}", &array[..10]);
     println!("  スコープ処理後の配列（最後の10個）: {:?}", &array[990..]);
-    
+
     // 結果の確認
     let results_match = array_seq == array;
     println!("  結果の一致: {}", results_match);
-    
+
     if duration_par < duration_seq {
         let improvement = duration_seq.as_micros() as f64 / duration_par.as_micros() as f64;
         println!("  🚀 並列処理は逐次処理より {:.2} 倍高速！", improvement);
     } else {
         println!("  ⚠️ 並列処理は逐次処理より高速ではありませんでした");
     }
-    
+
     println!("\n=== 高度な並列処理まとめ ===");
     println!("💡 Rayonの高度な機能:");
     println!("   - par_sort(): 並列ソート");
@@ -180,4 +186,4 @@ fn scope_demo() {
     println!("⚠️ 注意点:");
     println!("   - 処理コストと並列化コストのバランスが重要");
     println!("   - データサイズが小さい場合は逐次処理の方が速い場合も");
-} 
+}
