@@ -282,3 +282,38 @@ pub fn bit_difference(a: i64, b: i64) -> i64 {
 pub fn bit_symmetric_difference(a: i64, b: i64) -> i64 {
     a ^ b
 }
+
+// 0になっているビットの総数を数える
+pub fn count_zeros(n: i64) -> u32 {
+    n.count_zeros()
+}
+
+// 先頭（左側）の連続する0の数を数える
+pub fn leading_zeros(n: i64) -> u32 {
+    n.leading_zeros()
+}
+
+// 末尾（右側）の連続する0の数を数える
+pub fn trailing_zeros(n: i64) -> u32 {
+    n.trailing_zeros()
+}
+
+// ビット全体をn個、左に循環シフトする
+pub fn rotate_left(n: i64, bits: u32) -> i64 {
+    n.rotate_left(bits)
+}
+
+// ビット全体をn個、右に循環シフトする
+pub fn rotate_right(n: i64, bits: u32) -> i64 {
+    n.rotate_right(bits)
+}
+
+// 全てのビットの順序を逆にする
+pub fn reverse_bits(n: i64) -> i64 {
+    n.reverse_bits()
+}
+
+// バイトの順序を逆にする（エンディアン変換）
+pub fn swap_bytes(n: i64) -> i64 {
+    n.swap_bytes()
+}
